@@ -25,7 +25,7 @@ import static javax.ws.rs.core.Response.status;
  */
 @Component
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/builds/{buildNumber}")
+@Path("/builds/{buildNumber}/phases")
 public class PhaseResource {
     @Resource
     private PhaseService phaseService;
@@ -36,7 +36,6 @@ public class PhaseResource {
      * @return response The response.
      */
     @GET
-    @Path("/phases")
     public Response getPhases(final @PathParam("buildNumber") int buildNumber) {
         Response response;
         try {
@@ -54,7 +53,6 @@ public class PhaseResource {
      * @return response The response.
      */
     @POST
-    @Path("/phases")
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response registerPhase(final @PathParam("buildNumber") int buildNumber, final @Valid Phase phase) {
@@ -77,7 +75,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @GET
-    @Path("/phases/{phaseName}")
+    @Path("/{phaseName}")
     public Response getPhase(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
@@ -101,7 +99,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @PUT
-    @Path("/phases/{phaseName}")
+    @Path("/{phaseName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finishPhase(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid State state) {
         Response response;
