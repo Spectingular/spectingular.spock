@@ -14,23 +14,20 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
 
 /**
- * Endpoint for exposing the feedback api.
+ * Endpoint for exposing the builds.
  */
 @Component
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/builds")
-public class FeedbackResource {
-    @Resource
-    private PhaseService phaseService;
+public class BuildResource {
     @Resource
     private BuildService buildService;
-    @Resource
-    private TaskService taskService;
 
     /**
      * Gets all the {@link org.spectingular.spock.domain.Build}s.
@@ -54,10 +51,8 @@ public class FeedbackResource {
             buildService.persist(build);
             response = ok().build();
         } catch (DuplicateKeyException e) {
-            response = status(NOT_ACCEPTABLE).entity(new Error("Build with number [%d] has already been registered ", build.getNumber())).build();
+            response = status(CONFLICT).entity(new Error("Build with number [%d] has already been registered ", build.getNumber())).build();
         }
         return response;
     }
-
-
 }
