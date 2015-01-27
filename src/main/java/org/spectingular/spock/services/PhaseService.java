@@ -1,6 +1,8 @@
 package org.spectingular.spock.services;
 
-import org.spectingular.spock.domain.*;
+import org.spectingular.spock.domain.Build;
+import org.spectingular.spock.domain.Phase;
+import org.spectingular.spock.domain.State;
 import org.spectingular.spock.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -9,15 +11,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.String.*;
-import static javax.ws.rs.core.Response.status;
+import static java.lang.String.format;
 
 @Service
-public final class PhaseService {
+public final class PhaseService extends AbstractService {
     @Resource
     private PhaseRepository phaseRepository;
-    @Resource
-    private BuildRepository buildRepository;
 
     /**
      * Gets all the {@link org.spectingular.spock.domain.Phase}s for the {@link org.spectingular.spock.domain.Build} matching the given build number.
@@ -59,7 +58,7 @@ public final class PhaseService {
     /**
      * Update the {@link org.spectingular.spock.domain.Phase}.
      * @param buildNumber The build number.
-     * @param phaseName   The {@link org.spectingular.spock.domain.Phase} name.
+     * @param phaseName   The phase name.
      * @param state       The {@link org.spectingular.spock.domain.State}.
      * @throws NotFoundException
      */
@@ -72,23 +71,6 @@ public final class PhaseService {
             phaseRepository.save(found);
         } else {
             throw new NotFoundException(format("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber));
-        }
-    }
-
-    /**
-     * Find the {@link org.spectingular.spock.domain.Build} matching the given build number.
-     * @param buildNumber The build number.
-     * @param callback    The callback.
-     * @param <T>         The result.
-     * @return result The result.
-     * @throws org.spectingular.spock.exceptions.NotFoundException
-     */
-    private <T> T findBuild(final int buildNumber, final FindCallback<T, Build> callback) throws NotFoundException {
-        final Optional<Build> o = buildRepository.findByNumber(buildNumber);
-        if (o.isPresent()) {
-            return callback.find(o.get());
-        } else {
-            throw new NotFoundException(format("Build with number [%d] cannot be found", buildNumber));
         }
     }
 }

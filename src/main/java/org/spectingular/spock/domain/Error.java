@@ -7,9 +7,9 @@ public class Error {
     private String message;
 
     /**
-     * Default constructor. 
+     * Default constructor.
      * @param message The message.
-     * @param args The arguments
+     * @param args    The arguments
      */
     public Error(final String message, final Object... args) {
         this.message = String.format(message, args);

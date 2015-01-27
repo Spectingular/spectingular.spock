@@ -1,5 +1,7 @@
 package org.spectingular.spock.services;
 
+import org.spectingular.spock.exceptions.NotFoundException;
+
 /**
  * Callback for finding pre requisites*
  * @param <T> The return type of the callback.
@@ -11,5 +13,5 @@ public interface FindCallback<T, V> {
      * @param v The provided object.
      * @return t The result.
      */
-    T find(V v);
+    T find(V v) throws NotFoundException;
 }

@@ -5,11 +5,15 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 import org.springframework.stereotype.Component;
 
-/** Jersey configuration. */
+/**
+ * Jersey configuration.
+ */
 @Component
 public class JerseyConfig extends ResourceConfig {
 
-    /** Default constructor. */
+    /**
+     * Default constructor.
+     */
     public JerseyConfig() {
         packages(true, "org.spectingular.spock.api");
         property(ServerProperties.RESPONSE_SET_STATUS_OVER_SEND_ERROR, true);
