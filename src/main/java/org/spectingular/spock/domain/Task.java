@@ -3,6 +3,8 @@ package org.spectingular.spock.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,6 +13,9 @@ import javax.validation.constraints.NotNull;
 /**
  * Task represents an execution task from a lifecycle phase.
  */
+@CompoundIndexes({
+        @CompoundIndex(name = "task_phase", unique = true, def = "{'name': 1, 'phase': 1}")
+})
 @Document(collection = "tasks")
 public class Task {
     @Id
