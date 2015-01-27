@@ -63,108 +63,9 @@ public class FeedbackResource {
         return response;
     }
 
-    /**
-     * Gets all the {@link org.spectingular.spock.domain.Phase}s that are registered for the {@link org.spectingular.spock.domain.Build} matching the given build number.
-     * @param buildNumber The build number.
-     * @return response The response.
-     */
-    @GET
-    @Path("/{buildNumber}/phases")
-    public Response getPhases(final @PathParam("buildNumber") int buildNumber) {
-        final List<Phase> phases = phaseService.findByBuildNumber(buildNumber);
-        final Response response;
-        if(phases != null) {
-            response = ok(phases).build();
-        } else {
-            response = status(CONFLICT).entity(new Error("Build with name [%s] has not been registered", buildNumber)).build();
-        }
-        return response;
-    }
 
-    /**
-     * Gets the {@link org.spectingular.spock.domain.Phase} matching the given name for the {@link org.spectingular.spock.domain.Build} matching the given build number.
-     * @param buildNumber The build number.
-     * @param phaseName   The phase name.
-     * @return response The response.
-     */
-    @GET
-    @Path("/{buildNumber}/phases/{phaseName}")
-    public Response getPhase(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
-        final Optional<Phase> op = phaseService.findByBuildNumberAndName(buildNumber, phaseName);
-        final Response response;
-        if (op.isPresent()) {
-            response = ok(op.get()).build();
-        } else {
-            response = status(BAD_REQUEST).entity(new Error("Phase with name [%s] has not been registered for build with number [%d]", phaseName, buildNumber)).build();
-        }
-        return response;
-    }
 
-    /**
-     * Creates a phase for the build matching the given build number.
-     * @param buildNumber The build number.
-     * @param phase       The phase.
-     * @return response The response.
-     */
-    @POST
-    @Path("/{buildNumber}/phases")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Response startPhase(final @PathParam("buildNumber") int buildNumber, final @Valid Phase phase) {
-        Response response = ok().build();
 
-        final Optional<Build> ob = buildService.findByNumber(buildNumber);
-        if (ob.isPresent()) {
-            phase.setBuild(ob.get());
-            phase.setState(new State());
-
-            try {
-                phaseService.persist(phase);
-            } catch (DuplicateKeyException e) {
-                response = status(BAD_REQUEST).entity(new Error("Phase with name [%s] has already been registered for build with number [%d]", phase.getName(), buildNumber)).build();
-            }
-        } else {
-            response = status(BAD_REQUEST).entity(new Error("Phase with name [%s] cannot be registered for build with number [%d], because no build with that number has been registered", phase.getName(), buildNumber)).build();
-        }
-        return response;
-    }
-
-    /**
-     * Updates a phase for the build and phase matching the given parameters
-     * @param buildNumber The build number.
-     * @param phaseName   The phase name.
-     * @param state       The state.
-     * @return response The response.
-     */
-    @PUT
-    @Path("/{buildNumber}/phases/{phaseName}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response finishPhase(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid State state) {
-        Response response = ok().build();
-
-        final Optional<Build> ob = buildService.findByNumber(buildNumber);
-        if (ob.isPresent()) {
-            final Optional<Phase> o = phaseService.findByBuildNumberAndName(buildNumber, phaseName);
-
-            if (o.isPresent()) {
-                final Phase found = o.get();
-                found.getState().setStopDate(new Date());
-                found.getState().setSuccess(state.isSuccess());
-
-                try {
-                    phaseService.persist(found);
-                } catch (Exception e) {
-                    response = status(BAD_REQUEST).entity(new Error(e.getMessage())).build();
-                }
-            } else {
-                response = status(BAD_REQUEST).entity(new Error("Phase with name [%s] cannot be updated for build with number [%d], because no phase with that name has not been registered", phaseName, buildNumber)).build();
-            }
-
-        } else {
-            response = status(BAD_REQUEST).entity(new Error("Phase with name [%s] cannot be registered for build with number [%d], because no build with that number has been registered", phaseName, buildNumber)).build();
-        }
-        return response;
-    }
 
     /**
      * Gets all {@link org.spectingular.spock.domain.Task}s that are registered for the {@link org.spectingular.spock.domain.Build} and {@link org.spectingular.spock.domain.Phase} matching the given parameters.
@@ -192,19 +93,19 @@ public class FeedbackResource {
     public Response startTask(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
         Response response = ok().build();
 
-        final Optional<Phase> o = phaseService.findByBuildNumberAndName(buildNumber, phaseName);
-
-        if (o.isPresent()) {
-            task.setPhase(o.get());
-            task.setState(new State());
-            try {
-                taskService.persist(task);
-            } catch (Exception e) {
-                response = status(BAD_REQUEST).entity(new Error(e.getMessage())).build();
-            }
-        } else {
-            response = status(BAD_REQUEST).entity(new Error("Task with name [%s] cannot be updated for phase with name [%s] of build with number [%d], because no phase with that name has not been registered for build with number [%d]", task.getName(), phaseName, buildNumber)).build();
-        }
+//        final Optional<Phase> o = phaseService.findByBuildNumberAndName(buildNumber, phaseName);
+//
+//        if (o.isPresent()) {
+//            task.setPhase(o.get());
+//            task.setState(new State());
+//            try {
+//                taskService.persist(task);
+//            } catch (Exception e) {
+//                response = status(BAD_REQUEST).entity(new Error(e.getMessage())).build();
+//            }
+//        } else {
+//            response = status(BAD_REQUEST).entity(new Error("Task with name [%s] cannot be updated for phase with name [%s] of build with number [%d], because no phase with that name has not been registered for build with number [%d]", task.getName(), phaseName, buildNumber)).build();
+//        }
 
         return response;
     }
