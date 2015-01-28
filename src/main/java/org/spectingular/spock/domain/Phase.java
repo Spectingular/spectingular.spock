@@ -28,19 +28,19 @@ public class Phase {
     private Build build;
 
     /**
+     * Constructor. 
+     * @param name The name.
+     */
+    public Phase(final String name) {
+        this.name = name;
+    }
+
+    /**
      * Gets the name.
      * @return name The name.
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * Sets the name.
-     * @param name The name.
-     */
-    public void setName(final String name) {
-        this.name = name;
     }
 
     /**

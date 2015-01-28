@@ -2,13 +2,9 @@ package org.spectingular.spock.services;
 
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Phase;
-import org.spectingular.spock.exceptions.NotFoundException;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.Null;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static java.lang.String.format;
 
@@ -27,12 +23,12 @@ public class AbstractService {
      * @param fn          The {@link java.util.function.Function}.
      * @param <T>         The result.
      * @return result The result.
-     * @throws org.spectingular.spock.exceptions.NotFoundException
+     * @throws IllegalArgumentException
      */
-    protected <T> T findBuild(final int buildNumber, final Function<Build, T> fn) throws NotFoundException {
+    protected <T> T findBuild(final int buildNumber, final Function<Build, T> fn) throws IllegalArgumentException {
         return buildRepository.findByNumber(buildNumber)
                 .map(o -> fn.apply(o))
-                .orElseThrow(() -> new NotFoundException(format("Build with number [%d] cannot be found", buildNumber)));
+                .orElseThrow(() -> new IllegalArgumentException(format("Build with number [%d] cannot be found", buildNumber)));
     }
 
     /**
@@ -42,13 +38,13 @@ public class AbstractService {
      * @param fn          The {@link java.util.function.Function}.
      * @param <T>         The result.
      * @return result The result.
-     * @throws org.spectingular.spock.exceptions.NotFoundException
+     * @throws IllegalArgumentException
      */
-    protected <T> T findPhase(final int buildNumber, final String phaseName, final Function<Phase, T> fn) throws NotFoundException {
+    protected <T> T findPhase(final int buildNumber, final String phaseName, final Function<Phase, T> fn) throws IllegalArgumentException {
         return findBuild(buildNumber, (Function<Build, T>) build -> {
             return phaseRepository.findByBuildAndName(build, phaseName)
                     .map(o -> fn.apply(o))
-                    .orElseThrow(() -> new NotFoundException(format("Phase with name [%s] for build with number [%d] cannot be found", phaseName, build.getNumber())));
+                    .orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for build with number [%d] cannot be found", phaseName, build.getNumber())));
         });
     }
 }

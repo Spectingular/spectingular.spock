@@ -3,7 +3,6 @@ package org.spectingular.spock.api;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.domain.Task;
-import org.spectingular.spock.exceptions.NotFoundException;
 import org.spectingular.spock.services.TaskService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
@@ -41,7 +40,7 @@ public class TaskResource {
         Response response;
         try {
             response = ok(taskService.findByBuildNumberAndPhaseName(buildNumber, phaseName)).build();
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
         return response;
@@ -62,7 +61,7 @@ public class TaskResource {
         try {
             taskService.registerTask(buildNumber, phaseName, task);
             response = ok().build();
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         } catch (DuplicateKeyException e) {
             response = status(CONFLICT).entity(new Error("Task with name [%s] has already been registered for phase with name [%s] and build with number [%d]", task.getName(), phaseName, buildNumber)).build();
@@ -88,7 +87,7 @@ public class TaskResource {
             } else {
                 response = status(CONFLICT).entity(new Error("Task with name [%s] for phase with name [%s] and build with number [%d] cannot be found", taskName, phaseName, buildNumber)).build();
             }
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
         return response;
@@ -110,7 +109,7 @@ public class TaskResource {
         try {
             taskService.updateTask(buildNumber, phaseName, taskName, state);
             response = ok().build();
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
         return response;

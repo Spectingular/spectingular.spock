@@ -28,19 +28,19 @@ public class Task {
     private State state;
 
     /**
+     * Constructor.
+     * @param name The name.
+     */
+    public Task(final String name) {
+        this.name = name;
+    }
+
+    /**
      * Gets the name.
      * @return name The name.
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * Sets the name.
-     * @param name
-     */
-    public void setName(final String name) {
-        this.name = name;
     }
 
     /**

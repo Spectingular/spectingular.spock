@@ -2,7 +2,6 @@ package org.spectingular.spock.services;
 
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.domain.Task;
-import org.spectingular.spock.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,7 +22,7 @@ public final class TaskService extends AbstractService {
      * @param phaseName   The phase name.
      * @return phases The {@link org.spectingular.spock.domain.Phase}s.
      */
-    public List<Task> findByBuildNumberAndPhaseName(final int buildNumber, final String phaseName) throws NotFoundException {
+    public List<Task> findByBuildNumberAndPhaseName(final int buildNumber, final String phaseName) throws IllegalArgumentException {
         return findPhase(buildNumber, phaseName, phase -> taskRepository.findByPhase(phase));
     }
 
@@ -33,7 +32,7 @@ public final class TaskService extends AbstractService {
      * @param phaseName   The phase name.
      * @return phase The {@link org.spectingular.spock.domain.Phase}
      */
-    public Optional<Task> findByBuildNumberPhaseNameAndName(final int buildNumber, final String phaseName, final String taskName) throws NotFoundException {
+    public Optional<Task> findByBuildNumberPhaseNameAndName(final int buildNumber, final String phaseName, final String taskName) throws IllegalArgumentException {
         return findPhase(buildNumber, phaseName, phase -> taskRepository.findByPhaseAndName(phase, taskName));
     }
 
@@ -42,9 +41,9 @@ public final class TaskService extends AbstractService {
      * @param buildNumber The build number.
      * @param phaseName   The phase name.
      * @param task        The {@link org.spectingular.spock.domain.Task}.
-     * @throws NotFoundException
+     * @throws IllegalArgumentException
      */
-    public void registerTask(final int buildNumber, final String phaseName, final Task task) throws NotFoundException {
+    public void registerTask(final int buildNumber, final String phaseName, final Task task) throws IllegalArgumentException {
         findPhase(buildNumber, phaseName, phase -> {
             task.setPhase(phase);
             task.setState(new State());
@@ -59,9 +58,9 @@ public final class TaskService extends AbstractService {
      * @param phaseName   The phase name.
      * @param taskName    The task name.
      * @param state       The {@link org.spectingular.spock.domain.State}.
-     * @throws NotFoundException
+     * @throws IllegalArgumentException
      */
-    public void updateTask(final int buildNumber, final String phaseName, final String taskName, final State state) throws NotFoundException {
+    public void updateTask(final int buildNumber, final String phaseName, final String taskName, final State state) throws IllegalArgumentException {
         Optional<Task> o = findByBuildNumberPhaseNameAndName(buildNumber, phaseName, taskName);
         if (o.isPresent()) {
             final Task found = o.get();
@@ -69,7 +68,7 @@ public final class TaskService extends AbstractService {
             found.getState().setSuccess(state.isSuccess());
             taskRepository.save(found);
         } else {
-            throw new NotFoundException(format("Task with name [%s] for phase with name [%s] and build with number [%d] cannot be found", taskName, phaseName, buildNumber));
+            throw new IllegalArgumentException(format("Task with name [%s] for phase with name [%s] and build with number [%d] cannot be found", taskName, phaseName, buildNumber));
         }
     }
 }

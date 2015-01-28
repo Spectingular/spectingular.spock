@@ -3,7 +3,6 @@ package org.spectingular.spock.api;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Phase;
 import org.spectingular.spock.domain.State;
-import org.spectingular.spock.exceptions.NotFoundException;
 import org.spectingular.spock.services.PhaseService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
@@ -40,7 +39,7 @@ public class PhaseResource {
         Response response;
         try {
             response = ok(phaseService.findByBuildNumber(buildNumber)).build();
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
         return response;
@@ -60,7 +59,7 @@ public class PhaseResource {
         try {
             phaseService.registerPhase(buildNumber, phase);
             response = ok().build();
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         } catch (DuplicateKeyException e) {
             response = status(CONFLICT).entity(new Error("Phase with name [%s] has already been registered for build with number [%d]", phase.getName(), buildNumber)).build();
@@ -85,7 +84,7 @@ public class PhaseResource {
             } else {
                 response = status(CONFLICT).entity(new Error("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber)).build();
             }
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
         return response;
@@ -106,7 +105,7 @@ public class PhaseResource {
         try {
             phaseService.updatePhase(buildNumber, phaseName, state);
             response = ok().build();
-        } catch (NotFoundException e) {
+        } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
         return response;
