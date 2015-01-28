@@ -3,8 +3,6 @@ package org.spectingular.spock.api;
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.services.BuildService;
-import org.spectingular.spock.services.PhaseService;
-import org.spectingular.spock.services.TaskService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +13,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.Response.Status.CONFLICT;
-import static javax.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
 
