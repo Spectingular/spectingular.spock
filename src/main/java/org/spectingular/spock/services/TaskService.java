@@ -12,7 +12,7 @@ import java.util.Optional;
 import static java.lang.String.format;
 
 @Service
-public final class TaskService extends AbstractService {
+public class TaskService extends BaseService {
     @Resource
     private TaskRepository taskRepository;
 

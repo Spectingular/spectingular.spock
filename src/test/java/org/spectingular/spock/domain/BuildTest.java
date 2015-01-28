@@ -3,7 +3,7 @@ package org.spectingular.spock.domain;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /** Test class for {@link org.spectingular.spock.domain.Build}. */
 public class BuildTest {

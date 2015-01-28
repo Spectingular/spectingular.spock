@@ -10,7 +10,7 @@ import java.util.Optional;
 import static java.util.Optional.ofNullable;
 
 @Service
-public final class BuildService {
+public class BuildService {
     @Resource
     private BuildRepository repository;
 

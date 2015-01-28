@@ -35,7 +35,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @GET
-    public Response getPhases(final @PathParam("buildNumber") int buildNumber) {
+    public Response all(final @PathParam("buildNumber") int buildNumber) {
         Response response;
         try {
             response = ok(phaseService.findByBuildNumber(buildNumber)).build();
@@ -54,7 +54,7 @@ public class PhaseResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response registerPhase(final @PathParam("buildNumber") int buildNumber, final @Valid Phase phase) {
+    public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Phase phase) {
         Response response;
         try {
             phaseService.registerPhase(buildNumber, phase);
@@ -75,7 +75,7 @@ public class PhaseResource {
      */
     @GET
     @Path("/{phaseName}")
-    public Response getPhase(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
+    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
             final Optional<Phase> op = phaseService.findByBuildNumberAndName(buildNumber, phaseName);
@@ -100,7 +100,7 @@ public class PhaseResource {
     @PUT
     @Path("/{phaseName}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response finishPhase(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid State state) {
+    public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid State state) {
         Response response;
         try {
             phaseService.updatePhase(buildNumber, phaseName, state);

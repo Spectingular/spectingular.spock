@@ -1,13 +1,10 @@
 package org.spectingular.spock.domain;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Date;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /** Test class for {@link org.spectingular.spock.domain.Error}. */
 @RunWith(MockitoJUnitRunner.class)

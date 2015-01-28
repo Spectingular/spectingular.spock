@@ -36,7 +36,7 @@ public class TaskResource {
      * @return response The response.
      */
     @GET
-    public Response getTasks(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
+    public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
             response = ok(taskService.findByBuildNumberAndPhaseName(buildNumber, phaseName)).build();
@@ -56,7 +56,7 @@ public class TaskResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response registerTask(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
+    public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
         Response response;
         try {
             taskService.registerTask(buildNumber, phaseName, task);
@@ -78,7 +78,7 @@ public class TaskResource {
      */
     @GET
     @Path("/{taskName}")
-    public Response getTask(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName) {
+    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName) {
         Response response;
         try {
             final Optional<Task> ot = taskService.findByBuildNumberPhaseNameAndName(buildNumber, phaseName, taskName);
@@ -104,7 +104,7 @@ public class TaskResource {
     @PUT
     @Path("/{taskName}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response finishPhase(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName, final @Valid State state) {
+    public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName, final @Valid State state) {
         Response response;
         try {
             taskService.updateTask(buildNumber, phaseName, taskName, state);

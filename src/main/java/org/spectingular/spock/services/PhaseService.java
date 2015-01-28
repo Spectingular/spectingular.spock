@@ -12,7 +12,7 @@ import java.util.Optional;
 import static java.lang.String.format;
 
 @Service
-public final class PhaseService extends AbstractService {
+public class PhaseService extends BaseService {
     @Resource
     private PhaseRepository phaseRepository;
 

@@ -9,9 +9,9 @@ import java.util.function.Function;
 import static java.lang.String.format;
 
 /**
- * Abstract service.
+ * Base service.
  */
-public class AbstractService {
+public class BaseService {
     @Resource
     private BuildRepository buildRepository;
     @Resource
