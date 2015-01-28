@@ -1,6 +1,5 @@
 package org.spectingular.spock.services;
 
-import org.spectingular.spock.domain.Phase;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.domain.Task;
 import org.spectingular.spock.exceptions.NotFoundException;
@@ -46,14 +45,11 @@ public final class TaskService extends AbstractService {
      * @throws NotFoundException
      */
     public void registerTask(final int buildNumber, final String phaseName, final Task task) throws NotFoundException {
-        findPhase(buildNumber, phaseName, new FindCallback<Void, Phase>() {
-            @Override
-            public Void find(final Phase phase) {
-                task.setPhase(phase);
-                task.setState(new State());
-                taskRepository.save(task);
-                return null;
-            }
+        findPhase(buildNumber, phaseName, phase -> {
+            task.setPhase(phase);
+            task.setState(new State());
+            taskRepository.save(task);
+            return null;
         });
     }
 

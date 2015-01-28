@@ -10,6 +10,8 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static java.lang.String.format;
 
@@ -44,15 +46,13 @@ public final class PhaseService extends AbstractService {
      * @throws NotFoundException
      */
     public void registerPhase(final int buildNumber, final Phase phase) throws NotFoundException {
-        findBuild(buildNumber, new FindCallback<Void, Build>() {
-            @Override
-            public Void find(final Build build) {
-                phase.setBuild(build);
-                phase.setState(new State());
-                phaseRepository.save(phase);
-                return null;
-            }
-        });
+        findBuild(buildNumber, build -> {
+                    phase.setBuild(build);
+                    phase.setState(new State());
+                    phaseRepository.save(phase);
+                    return phase;
+                }
+        );
     }
 
     /**
@@ -63,14 +63,14 @@ public final class PhaseService extends AbstractService {
      * @throws NotFoundException
      */
     public void updatePhase(final int buildNumber, final String phaseName, final State state) throws NotFoundException {
-        Optional<Phase> o = findByBuildNumberAndName(buildNumber, phaseName);
-        if (o.isPresent()) {
-            final Phase found = o.get();
-            found.getState().setStopDate(new Date());
-            found.getState().setSuccess(state.isSuccess());
-            phaseRepository.save(found);
-        } else {
-            throw new NotFoundException(format("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber));
-        }
+        findByBuildNumberAndName(buildNumber, phaseName).
+                map(o -> {
+                    final Phase found = o;
+                    found.getState().setStopDate(new Date());
+                    found.getState().setSuccess(state.isSuccess());
+                    phaseRepository.save(found);
+                    return found;
+                }).
+                orElseThrow(() -> new NotFoundException(format("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber)));
     }
 }
