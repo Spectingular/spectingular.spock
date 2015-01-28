@@ -3,7 +3,7 @@ package org.spectingular.spock.exceptions;
 /**
  * Exception for handling a missing pre requisite.
  */
-public class NotFoundException extends Exception {
+public class NotFoundException extends RuntimeException {
 
     /**
      * Default constructor.
