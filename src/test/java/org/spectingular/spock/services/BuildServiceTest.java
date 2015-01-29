@@ -7,18 +7,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.spectingular.spock.domain.Build;
-import org.spectingular.spock.domain.Phase;
 import org.springframework.dao.DuplicateKeyException;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /** Test class for {@link org.spectingular.spock.services.BuildService}. */
@@ -42,7 +41,7 @@ public class BuildServiceTest {
 
     @Test
     public void shouldFindBuild() throws Exception {
-        buildOptional = Optional.of(build);
+        buildOptional = of(build);
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         assertTrue(service.findByNumber(1).isPresent());
         verify(buildRepository).findByNumber(eq(1));
@@ -50,7 +49,7 @@ public class BuildServiceTest {
     
     @Test
     public void shouldNotFindBuildWhenTheBuildDoesNotExist() throws Exception {
-        buildOptional = Optional.empty();
+        buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         assertFalse(service.findByNumber(1).isPresent());
         verify(buildRepository).findByNumber(eq(1));
@@ -71,7 +70,7 @@ public class BuildServiceTest {
 
     @Test
     public void shouldNotPersistBuildWhenTheBuildAlreadyExists() throws Exception {
-        buildOptional = Optional.of(build);
+        buildOptional = of(build);
         doThrow(DuplicateKeyException.class).when(buildRepository).save(eq(build));
         try {
             service.persist(build);

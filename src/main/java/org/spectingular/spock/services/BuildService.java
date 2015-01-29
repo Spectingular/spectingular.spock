@@ -7,7 +7,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.*;
+import static java.util.Optional.empty;
 
 @Service
 public class BuildService {

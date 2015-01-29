@@ -13,6 +13,8 @@ import org.spectingular.spock.domain.Phase;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.eq;
@@ -50,7 +52,7 @@ public class BaseServiceTest {
 
     @Test
     public void shouldFindBuild() throws Exception {
-        buildOptional = Optional.of(build);
+        buildOptional = of(build);
         when(buildRepository.findByNumber(1)).thenReturn(buildOptional);
         when(buildFn.apply(Mockito.isA(Build.class))).thenReturn(result);
         service.findBuild(1, buildFn);
@@ -60,7 +62,7 @@ public class BaseServiceTest {
     
     @Test
     public void shouldNotFindBuildWhenTheBuildDoesNotExist() throws Exception {
-        buildOptional = Optional.empty();
+        buildOptional = empty();
         when(buildRepository.findByNumber(1)).thenReturn(buildOptional);
         try {
             service.findBuild(1, buildFn);
@@ -73,8 +75,8 @@ public class BaseServiceTest {
 
     @Test
     public void shouldFindPhase() throws Exception {
-        buildOptional = Optional.of(build);
-        phaseOptional = Optional.of(phase);
+        buildOptional = of(build);
+        phaseOptional = of(phase);
         when(buildRepository.findByNumber(1)).thenReturn(buildOptional);
         when(phaseRepository.findByBuildAndName(build, "phase")).thenReturn(phaseOptional);
         when(phaseFn.apply(Mockito.isA(Phase.class))).thenReturn(result);
@@ -86,8 +88,8 @@ public class BaseServiceTest {
 
     @Test
     public void shouldNotFindPhaseWhenTheBuildDoesNotExist() throws Exception {
-        buildOptional = Optional.of(build);
-        phaseOptional = Optional.empty();
+        buildOptional = of(build);
+        phaseOptional = empty();
         when(buildRepository.findByNumber(1)).thenReturn(buildOptional);
         when(phaseRepository.findByBuildAndName(build, "phase")).thenReturn(phaseOptional);
         try {
@@ -102,7 +104,7 @@ public class BaseServiceTest {
 
     @Test
     public void shouldNotFindPhaseWhenThePhaseDoesNotExist() throws Exception {
-        buildOptional = Optional.empty();
+        buildOptional = empty();
         when(buildRepository.findByNumber(1)).thenReturn(buildOptional);
         try {
             service.findPhase(1, "phase", phaseFn);

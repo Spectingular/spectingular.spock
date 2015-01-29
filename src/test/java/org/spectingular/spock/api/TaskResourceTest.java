@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
@@ -84,7 +86,7 @@ public class TaskResourceTest {
 
     @Test
     public void shouldGetTask() throws Exception {
-        optional = Optional.of(task);
+        optional = of(task);
         when(service.findByBuildNumberPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
         assertEquals(task, resource.get(1, "phase", "task").getEntity());
     }
@@ -97,7 +99,7 @@ public class TaskResourceTest {
 
     @Test
     public void shouldNotGetTaskWhenTaskDoesNotExist() throws Exception {
-        optional = Optional.empty();
+        optional = empty();
         when(service.findByBuildNumberPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
         assertEquals("Task with name [task] for phase with name [phase] and build with number [1] cannot be found", ((Error) resource.get(1, "phase", "task").getEntity()).getMessage());
     }

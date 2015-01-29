@@ -13,15 +13,14 @@ import org.springframework.dao.DuplicateKeyException;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /** Test class for {@link org.spectingular.spock.services.PhaseService}. */
@@ -52,7 +51,7 @@ public class PhaseServiceTest {
 
     @Test
     public void shouldFindPhases() throws Exception {
-        buildOptional = Optional.of(build);
+        buildOptional = of(build);
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(phaseRepository.findByBuild(eq(build))).thenReturn(new ArrayList<Phase>());
         assertEquals(0, service.findByBuildNumber(1).size());
@@ -62,7 +61,7 @@ public class PhaseServiceTest {
 
     @Test
     public void shouldNotFindPhasesWhenTheBuildDoesNotExist() throws Exception {
-        buildOptional = Optional.empty();
+        buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
             service.findByBuildNumber(1);
@@ -75,7 +74,18 @@ public class PhaseServiceTest {
 
     @Test
     public void shouldFindPhase() throws Exception {
-        buildOptional = Optional.empty();
+        buildOptional = of(build);
+        phaseOptional = of(phase);
+        when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
+        when(phaseRepository.findByBuildAndName(eq(build), eq("phase"))).thenReturn(phaseOptional);
+        assertEquals(phaseOptional, service.findByBuildNumberAndName(1, "phase"));
+        verify(buildRepository).findByNumber(eq(1));
+        verify(phaseRepository).findByBuildAndName(eq(build), eq("phase"));
+    }
+
+    @Test
+    public void shouldNotFindPhaseWhenTheBuildDoesNotExist() throws Exception {
+        buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
             service.findByBuildNumberAndName(1, "phase");
@@ -87,20 +97,9 @@ public class PhaseServiceTest {
     }
 
     @Test
-    public void shouldNotFindPhaseWhenTheBuildDoesNotExist() throws Exception {
-        buildOptional = Optional.of(build);
-        phaseOptional = Optional.of(phase);
-        when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
-        when(phaseRepository.findByBuildAndName(eq(build), eq("phase"))).thenReturn(phaseOptional);
-        assertEquals(phaseOptional, service.findByBuildNumberAndName(1, "phase"));
-        verify(buildRepository).findByNumber(eq(1));
-        verify(phaseRepository).findByBuildAndName(eq(build), eq("phase"));
-    }
-
-    @Test
     public void shouldRegisterPhase() throws Exception {
-        buildOptional = Optional.of(build);
-        phaseOptional = Optional.of(phase);
+        buildOptional = of(build);
+        phaseOptional = of(phase);
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         service.registerPhase(1, phase);
         verify(phase).setState(isA(State.class));
@@ -111,7 +110,7 @@ public class PhaseServiceTest {
 
     @Test
     public void shouldNotRegisterPhaseWhenTheBuildDoesNotExist() throws Exception {
-        buildOptional = Optional.empty();
+        buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
             service.registerPhase(1, phase);
@@ -124,8 +123,8 @@ public class PhaseServiceTest {
 
     @Test
     public void shouldNotRegisterPhaseWhenThePhaseAlreadyExists() throws Exception {
-        buildOptional = Optional.of(build);
-        phaseOptional = Optional.of(phase);
+        buildOptional = of(build);
+        phaseOptional = of(phase);
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         doThrow(DuplicateKeyException.class).when(phaseRepository).save(eq(phase));
         try {
@@ -138,8 +137,8 @@ public class PhaseServiceTest {
 
     @Test
     public void shouldUpdatePhase() throws Exception {
-        buildOptional = Optional.of(build);
-        phaseOptional = Optional.of(phase);
+        buildOptional = of(build);
+        phaseOptional = of(phase);
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(phaseRepository.findByBuildAndName(build, "phase")).thenReturn(phaseOptional);
         when(phase.getState()).thenReturn(state);
@@ -157,7 +156,7 @@ public class PhaseServiceTest {
 
     @Test
     public void shouldNotUpdatePhaseWhenTheBuildDoesNotExist() throws Exception {
-        buildOptional = Optional.empty();
+        buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
             service.updatePhase(1, "phase", new State());
@@ -170,8 +169,8 @@ public class PhaseServiceTest {
 
     @Test
     public void shouldNotUpdatePhaseWhenThePhaseDoesNotExists() throws Exception {
-        buildOptional = Optional.of(build);
-        phaseOptional = Optional.empty();
+        buildOptional = of(build);
+        phaseOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(phaseRepository.findByBuildAndName(eq(build), eq("phase"))).thenReturn(phaseOptional);
         try {
@@ -182,6 +181,4 @@ public class PhaseServiceTest {
         }
         verify(buildRepository).findByNumber(eq(1));
     }
-
-
 }
