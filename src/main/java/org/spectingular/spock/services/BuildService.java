@@ -7,7 +7,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
+import static java.util.Optional.*;
 
 @Service
 public class BuildService {
@@ -20,8 +20,7 @@ public class BuildService {
      * @return build The {@link org.spectingular.spock.domain.Build}.
      */
     public Optional<Build> findByNumber(final int number) {
-        final Optional<Build> o = repository.findByNumber(number);
-        return o.isPresent() ? ofNullable(o.get()) : o;
+        return repository.findByNumber(number).map(Optional::ofNullable).orElse(empty());
     }
 
     /**
