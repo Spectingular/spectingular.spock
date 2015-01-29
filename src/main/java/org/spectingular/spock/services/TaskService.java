@@ -48,7 +48,7 @@ public class TaskService extends BaseService {
             task.setPhase(phase);
             task.setState(new State());
             taskRepository.save(task);
-            return null;
+            return task;
         });
     }
 
@@ -61,14 +61,14 @@ public class TaskService extends BaseService {
      * @throws IllegalArgumentException
      */
     public void updateTask(final int buildNumber, final String phaseName, final String taskName, final State state) throws IllegalArgumentException {
-        Optional<Task> o = findByBuildNumberPhaseNameAndName(buildNumber, phaseName, taskName);
-        if (o.isPresent()) {
-            final Task found = o.get();
+        findByBuildNumberPhaseNameAndName(buildNumber, phaseName, taskName).map(o -> {
+            final Task found = o;
             found.getState().setStopDate(new Date());
             found.getState().setSuccess(state.isSuccess());
             taskRepository.save(found);
-        } else {
-            throw new IllegalArgumentException(format("Task with name [%s] for phase with name [%s] and build with number [%d] cannot be found", taskName, phaseName, buildNumber));
-        }
+            return found;
+
+        }).orElseThrow(() -> new IllegalArgumentException(format("Task with name [%s] for phase with name [%s] and build with number [%d] cannot be found", taskName, phaseName, buildNumber)));
+
     }
 }
