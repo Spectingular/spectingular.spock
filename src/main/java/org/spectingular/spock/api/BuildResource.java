@@ -42,7 +42,7 @@ public class BuildResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createBuild(final @Valid Build build) {
+    public Response start(final @Valid Build build) {
         Response response;
         try {
             buildService.persist(build);

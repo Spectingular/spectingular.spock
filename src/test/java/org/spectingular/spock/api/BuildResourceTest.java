@@ -42,14 +42,14 @@ public class BuildResourceTest {
 
     @Test
     public void shouldRegisterBuild() throws Exception {
-        assertEquals(OK.getStatusCode(), resource.createBuild(new Build()).getStatus());
+        assertEquals(OK.getStatusCode(), resource.start(new Build()).getStatus());
         verify(service).persist(isA(Build.class));
     }
 
     @Test
     public void shouldFailRegisteringBuildWhenItHasAlreadyBeenRegistered() throws Exception {
         doThrow(DuplicateKeyException.class).when(service).persist(isA(Build.class));
-        assertEquals(CONFLICT.getStatusCode(), resource.createBuild(new Build()).getStatus());
+        assertEquals(CONFLICT.getStatusCode(), resource.start(new Build()).getStatus());
         verify(service).persist(isA(Build.class));
     }
 }

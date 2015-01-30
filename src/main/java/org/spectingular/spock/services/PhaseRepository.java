@@ -24,7 +24,7 @@ public interface PhaseRepository extends Repository<Phase, String> {
     /**
      * Gets the {@link org.spectingular.spock.domain.Phase}s for the given {@link org.spectingular.spock.domain.Build}.
      * @param build The {@link org.spectingular.spock.domain.Build}
-     * @return phase The {@link org.spectingular.spock.domain.Phase}.
+     * @return phases The {@link org.spectingular.spock.domain.Phase}s.
      */
     List<Phase> findByBuild(Build build);
 

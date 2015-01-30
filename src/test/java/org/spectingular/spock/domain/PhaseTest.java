@@ -20,14 +20,16 @@ public class PhaseTest {
 
     @Before
     public void setUp() {
-        phase = new Phase("prepare");
+        phase = new Phase();
     }
 
     @Test
     public void shouldSetValues() throws Exception {
-        assertEquals("prepare", phase.getName());
+        assertNull(phase.getName());
         assertNull(phase.getBuild());
         assertNull(phase.getState());
+        phase.setName("prepare");
+        assertEquals("prepare", phase.getName());
         phase.setBuild(build);
         assertEquals(build, phase.getBuild());
         phase.setState(state);
