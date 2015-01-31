@@ -62,6 +62,23 @@ public class PhaseService extends BaseService {
     }
 
     /**
+     * Register the {@link org.spectingular.spock.domain.Phase}.
+     * @param buildNumber The build number.
+     * @param moduleName  the module name.
+     * @param phase       The {@link org.spectingular.spock.domain.Phase}.
+     * @throws IllegalArgumentException
+     */
+    public void registerPhase(final int buildNumber, final String moduleName, final Phase phase) throws IllegalArgumentException {
+        findModule(buildNumber, moduleName, module -> {
+                    phase.setModule(module);
+                    phase.setState(new State());
+                    phaseRepository.save(phase);
+                    return phase;
+                }
+        );
+    }
+
+    /**
      * Update the {@link org.spectingular.spock.domain.Phase}.
      * @param buildNumber The build number.
      * @param phaseName   The phase name.

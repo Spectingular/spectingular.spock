@@ -130,4 +130,27 @@ public class PhaseResource {
         }
         return response;
     }
+
+    /**
+     * Creates a phase for the build matching the given build number.
+     * @param buildNumber The build number.
+     * @param phase       The phase.
+     * @return response The response.
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/modules/{moduleName}/phases")
+    @Transactional
+    public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @Valid Phase phase) {
+        Response response;
+        try {
+            phaseService.registerPhase(buildNumber, moduleName, phase);
+            response = ok().build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        } catch (DuplicateKeyException e) {
+            response = status(CONFLICT).entity(new Error("Phase with name [%s] has already been registered for module with name [%s] and build with number [%d]", phase.getName(), moduleName, buildNumber)).build();
+        }
+        return response;
+    }
 }
