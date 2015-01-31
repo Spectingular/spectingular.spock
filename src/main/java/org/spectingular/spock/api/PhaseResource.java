@@ -117,6 +117,7 @@ public class PhaseResource {
     /**
      * Gets all the {@link org.spectingular.spock.domain.Phase}s that are registered for the {@link org.spectingular.spock.domain.Build} matching the given build number.
      * @param buildNumber The build number.
+     * @param moduleName  The module name.                    
      * @return response The response.
      */
     @GET
@@ -134,6 +135,7 @@ public class PhaseResource {
     /**
      * Creates a phase for the build matching the given build number.
      * @param buildNumber The build number.
+     * @param moduleName  The module name.
      * @param phase       The phase.
      * @return response The response.
      */
@@ -150,6 +152,30 @@ public class PhaseResource {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         } catch (DuplicateKeyException e) {
             response = status(CONFLICT).entity(new Error("Phase with name [%s] has already been registered for module with name [%s] and build with number [%d]", phase.getName(), moduleName, buildNumber)).build();
+        }
+        return response;
+    }
+
+    /**
+     * Gets the {@link org.spectingular.spock.domain.Phase} matching the given name for the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @return response The response.
+     */
+    @GET
+    @Path("/modules/{moduleName}/phases/{phaseName}")
+    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName) {
+        Response response;
+        try {
+            final Optional<Phase> op = phaseService.findByBuildNumberAndModuleNameAndName(buildNumber, moduleName, phaseName);
+            if (op.isPresent()) {
+                response = ok(op.get()).build();
+            } else {
+                response = status(CONFLICT).entity(new Error("Phase with name [%s] for module with name [%s] and build with number [%d] cannot be found", phaseName, moduleName, buildNumber)).build();
+            }
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
         return response;
     }

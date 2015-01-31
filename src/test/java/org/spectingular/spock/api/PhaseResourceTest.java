@@ -80,20 +80,20 @@ public class PhaseResourceTest {
     }
 
     @Test
-    public void shouldGetPhase() throws Exception {
+    public void shouldGetPhaseForBuild() throws Exception {
         optional = Optional.of(phase);
         when(service.findByBuildNumberAndName(eq(1), eq("phase"))).thenReturn(optional);
         assertEquals(phase, resource.get(1, "phase").getEntity());
     }
 
     @Test
-    public void shouldNotGetPhaseWhenBuildDoesNotExist() throws Exception {
+    public void shouldNotGetPhaseForBuildWhenBuildDoesNotExist() throws Exception {
         doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndName(eq(1), eq("phase"));
         assertEquals("error", ((Error) resource.get(1, "phase").getEntity()).getMessage());
     }
 
     @Test
-    public void shouldNotGetPhaseWhenPhaseDoesNotExist() throws Exception {
+    public void shouldNotGetPhaseForBuildWhenPhaseDoesNotExist() throws Exception {
         optional = Optional.empty();
         when(service.findByBuildNumberAndName(eq(1), eq("phase"))).thenReturn(optional);
         assertEquals("Phase with name [phase] for build with number [1] cannot be found", ((Error) resource.get(1, "phase").getEntity()).getMessage());
@@ -160,5 +160,24 @@ public class PhaseResourceTest {
         verify(service).registerPhase(eq(1), eq("module"), isA(Phase.class));
     }
 
+    @Test
+    public void shouldGetPhaseForModule() throws Exception {
+        optional = Optional.of(phase);
+        when(service.findByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"))).thenReturn(optional);
+        assertEquals(phase, resource.get(1, "module", "phase").getEntity());
+    }
+
+    @Test
+    public void shouldNotGetPhaseForModuleWhenBuildDoesNotExist() throws Exception {
+        doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"));
+        assertEquals("error", ((Error) resource.get(1, "module","phase").getEntity()).getMessage());
+    }
+
+    @Test
+    public void shouldNotGetPhaseForModuleWhenPhaseDoesNotExist() throws Exception {
+        optional = Optional.empty();
+        when(service.findByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"))).thenReturn(optional);
+        assertEquals("Phase with name [phase] for module with name [module] and build with number [1] cannot be found", ((Error) resource.get(1, "module", "phase").getEntity()).getMessage());
+    }
 
 }

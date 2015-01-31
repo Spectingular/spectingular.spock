@@ -30,6 +30,14 @@ public interface PhaseRepository extends Repository<Phase, String> {
     List<Phase> findByBuild(Build build);
 
     /**
+     * Gets the {@link org.spectingular.spock.domain.Phase} for the {@link org.spectingular.spock.domain.Module} matching the given parameters.
+     * @param module The {@link org.spectingular.spock.domain.Module}
+     * @param name  The name.
+     * @return phase The {@link org.spectingular.spock.domain.Phase}.
+     */
+    Optional<Phase> findByModuleAndName(Module module, String name);
+
+    /**
      * Gets the {@link org.spectingular.spock.domain.Phase}s for the given {@link org.spectingular.spock.domain.Module}.
      * @param module The {@link org.spectingular.spock.domain.Module}
      * @return phases The {@link org.spectingular.spock.domain.Phase}s.
