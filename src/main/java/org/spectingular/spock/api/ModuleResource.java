@@ -24,7 +24,7 @@ import static javax.ws.rs.core.Response.status;
  */
 @Component
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/builds/{buildNumber}/modules")
+@Path("/builds/{buildNumber}")
 public class ModuleResource {
     @Resource
     private ModuleService moduleService;
@@ -35,6 +35,7 @@ public class ModuleResource {
      * @return response The response.
      */
     @GET
+    @Path("/modules")
     public Response all(final @PathParam("buildNumber") int buildNumber) {
         Response response;
         try {
@@ -53,6 +54,7 @@ public class ModuleResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/modules")
     @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Module module) {
         Response response;
@@ -74,7 +76,7 @@ public class ModuleResource {
      * @return response The response.
      */
     @GET
-    @Path("/{moduleName}")
+    @Path("/modules/{moduleName}")
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
         Response response;
         try {
@@ -98,7 +100,7 @@ public class ModuleResource {
      * @return response The response.
      */
     @PUT
-    @Path("/{moduleName}")
+    @Path("/modules/{moduleName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @Valid State state) {
         Response response;
