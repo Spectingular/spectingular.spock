@@ -1,7 +1,6 @@
 package org.spectingular.spock.services;
 
 import org.spectingular.spock.domain.Module;
-import org.spectingular.spock.domain.Phase;
 import org.spectingular.spock.domain.State;
 import org.springframework.stereotype.Service;
 

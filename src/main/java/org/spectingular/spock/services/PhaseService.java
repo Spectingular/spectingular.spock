@@ -26,6 +26,16 @@ public class PhaseService extends BaseService {
     }
 
     /**
+     * Gets all the {@link org.spectingular.spock.domain.Phase}s for the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * @param buildNumber The build number.
+     * @return phases The {@link org.spectingular.spock.domain.Phase}s.
+     */
+    public List<Phase> findByBuildNumberAndModuleName(final int buildNumber, final String moduleName) throws IllegalArgumentException {
+        return findModule(buildNumber, moduleName, module -> phaseRepository.findByModule(module));
+    }
+
+
+    /**
      * Gets the {@link org.spectingular.spock.domain.Phase} for the {@link org.spectingular.spock.domain.Build} matching the given parameters.
      * @param buildNumber The build number.
      * @param name        The name.

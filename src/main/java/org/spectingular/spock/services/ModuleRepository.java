@@ -3,7 +3,6 @@ package org.spectingular.spock.services;
 
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Module;
-import org.spectingular.spock.domain.Module;
 import org.springframework.data.repository.Repository;
 
 import java.util.List;

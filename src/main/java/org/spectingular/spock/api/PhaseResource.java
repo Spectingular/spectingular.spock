@@ -24,7 +24,7 @@ import static javax.ws.rs.core.Response.status;
  */
 @Component
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/builds/{buildNumber}/phases")
+@Path("/builds/{buildNumber}")
 public class PhaseResource {
     @Resource
     private PhaseService phaseService;
@@ -35,6 +35,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @GET
+    @Path("/phases")
     public Response all(final @PathParam("buildNumber") int buildNumber) {
         Response response;
         try {
@@ -45,6 +46,7 @@ public class PhaseResource {
         return response;
     }
 
+
     /**
      * Creates a phase for the build matching the given build number.
      * @param buildNumber The build number.
@@ -53,6 +55,7 @@ public class PhaseResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/phases")
     @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Phase phase) {
         Response response;
@@ -74,7 +77,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @GET
-    @Path("/{phaseName}")
+    @Path("/phases/{phaseName}")
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
@@ -98,13 +101,30 @@ public class PhaseResource {
      * @return response The response.
      */
     @PUT
-    @Path("/{phaseName}")
+    @Path("/phases/{phaseName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid State state) {
         Response response;
         try {
             phaseService.updatePhase(buildNumber, phaseName, state);
             response = ok().build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Gets all the {@link org.spectingular.spock.domain.Phase}s that are registered for the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * @param buildNumber The build number.
+     * @return response The response.
+     */
+    @GET
+    @Path("/modules/{moduleName}/phases")
+    public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
+        Response response;
+        try {
+            response = ok(phaseService.findByBuildNumberAndModuleName(buildNumber, moduleName)).build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }

@@ -2,6 +2,7 @@ package org.spectingular.spock.services;
 
 
 import org.spectingular.spock.domain.Build;
+import org.spectingular.spock.domain.Module;
 import org.spectingular.spock.domain.Phase;
 import org.springframework.data.repository.Repository;
 
@@ -27,6 +28,13 @@ public interface PhaseRepository extends Repository<Phase, String> {
      * @return phases The {@link org.spectingular.spock.domain.Phase}s.
      */
     List<Phase> findByBuild(Build build);
+
+    /**
+     * Gets the {@link org.spectingular.spock.domain.Phase}s for the given {@link org.spectingular.spock.domain.Module}.
+     * @param module The {@link org.spectingular.spock.domain.Module}
+     * @return phases The {@link org.spectingular.spock.domain.Phase}s.
+     */
+    List<Phase> findByModule(Module module);
 
     /**
      * Persists the {@link org.spectingular.spock.domain.Phase}.

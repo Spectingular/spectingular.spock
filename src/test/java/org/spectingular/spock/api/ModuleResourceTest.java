@@ -1,15 +1,14 @@
 package org.spectingular.spock.api;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.spectingular.spock.domain.*;
 import org.spectingular.spock.domain.Error;
-import org.spectingular.spock.services.ModuleService;
+import org.spectingular.spock.domain.Module;
+import org.spectingular.spock.domain.State;
 import org.spectingular.spock.services.ModuleService;
 import org.springframework.dao.DuplicateKeyException;
 

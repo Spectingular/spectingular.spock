@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Module;
-import org.spectingular.spock.domain.Phase;
 import org.spectingular.spock.domain.State;
 import org.springframework.dao.DuplicateKeyException;
 
