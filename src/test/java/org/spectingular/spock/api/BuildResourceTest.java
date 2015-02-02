@@ -47,7 +47,7 @@ public class BuildResourceTest {
     }
 
     @Test
-    public void shouldFailRegisteringBuildWhenItHasAlreadyBeenRegistered() throws Exception {
+    public void shouldFailRegisteringBuildWhenTheBuildAlreadyExists() throws Exception {
         doThrow(DuplicateKeyException.class).when(service).persist(isA(Build.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(new Build()).getStatus());
         verify(service).persist(isA(Build.class));

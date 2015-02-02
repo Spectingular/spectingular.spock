@@ -65,7 +65,7 @@ public class ModuleResourceTest {
     }
 
     @Test
-    public void shouldFailStartingModuleWhenTheBuildHasNotBeenRegistered() throws Exception {
+    public void shouldFailStartingModuleWhenTheBuildDoesNotExist() throws Exception {
         doThrow(new IllegalArgumentException("error")).when(service).registerModule(eq(1), isA(Module.class));
         final Response response = resource.start(1, module);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
@@ -74,7 +74,7 @@ public class ModuleResourceTest {
     }
 
     @Test
-    public void shouldFailStartingModuleWhenItHasAlreadyBeenRegistered() throws Exception {
+    public void shouldFailStartingModuleWhenTheModuleAlreadyExists() throws Exception {
         doThrow(DuplicateKeyException.class).when(service).registerModule(eq(1), isA(Module.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, module).getStatus());
         verify(service).registerModule(eq(1), isA(Module.class));
@@ -107,7 +107,7 @@ public class ModuleResourceTest {
     }
 
     @Test
-    public void shouldFailFinishingModuleWhenTheBuildOrModuleHaveNotBeenRegistered() throws Exception {
+    public void shouldFailFinishingModuleWhenTheBuildAndOrModuleDoNotExist() throws Exception {
         doThrow(new IllegalArgumentException("error")).when(service).updateModule(eq(1), eq("module"), isA(State.class));
         final Response response = resource.finish(1, "module", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
