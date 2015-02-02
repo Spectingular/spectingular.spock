@@ -317,4 +317,73 @@ public class PhaseServiceTest {
         verify(moduleRepository).findByBuildAndName(eq(build), eq("module"));
         verify(phaseRepository).save(eq(phase));
     }
+
+    @Test
+    public void shouldUpdatePhaseForModule() throws Exception {
+        buildOptional = of(build);
+        moduleOptional = of(module);
+        phaseOptional = of(phase);
+        when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
+        when(moduleRepository.findByBuildAndName(eq(build), eq("module"))).thenReturn(moduleOptional);
+        when(phaseRepository.findByModuleAndName(module, "phase")).thenReturn(phaseOptional);
+        when(phase.getState()).thenReturn(state);
+        assertNull(state.getStopDate());
+        assertFalse(state.isSuccess());
+        final State updatedState = new State();
+        updatedState.setSuccess(true);
+        service.updatePhase(1, "module", "phase", updatedState);
+        verify(state).setStopDate(isA(Date.class));
+        verify(state).setSuccess(isA(Boolean.class));
+        verify(buildRepository).findByNumber(eq(1));
+        verify(moduleRepository).findByBuildAndName(eq(build), eq("module"));
+        verify(phaseRepository).findByModuleAndName(eq(module), eq("phase"));
+        verify(phaseRepository).save(phase);
+    }
+
+    @Test
+    public void shouldNotUpdatePhaseForModuleWhenTheBuildDoesNotExist() throws Exception {
+        buildOptional = empty();
+        when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
+        try {
+            service.updatePhase(1, "module", "phase", new State());
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Build with number [1] cannot be found", e.getMessage());
+        }
+        verify(buildRepository).findByNumber(eq(1));
+    }
+
+    @Test
+    public void shouldNotUpdatePhaseForModuleWhenTheModuleDoesNotExist() throws Exception {
+        buildOptional = of(build);
+        moduleOptional = empty();
+        when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
+        when(moduleRepository.findByBuildAndName(eq(build), eq("module"))).thenReturn(moduleOptional);
+        try {
+            service.updatePhase(1, "module", "phase", new State());
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Module with name [module] for build with number [0] cannot be found", e.getMessage());
+        }
+        verify(buildRepository).findByNumber(eq(1));
+        verify(moduleRepository).findByBuildAndName(eq(build), eq("module"));
+    }
+
+    @Test
+    public void shouldNotUpdatePhaseForModuleWhenThePhaseDoesNotExists() throws Exception {
+        buildOptional = of(build);
+        moduleOptional = of(module);
+        phaseOptional = empty();
+        when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
+        when(moduleRepository.findByBuildAndName(eq(build), eq("module"))).thenReturn(moduleOptional);
+        when(phaseRepository.findByModuleAndName(module, "phase")).thenReturn(phaseOptional);
+        try {
+            service.updatePhase(1, "module", "phase", new State());
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Phase with name [phase] for module with name [module] and build with number [1] cannot be found", e.getMessage());
+        }
+        verify(buildRepository).findByNumber(eq(1));
+    }
+
 }

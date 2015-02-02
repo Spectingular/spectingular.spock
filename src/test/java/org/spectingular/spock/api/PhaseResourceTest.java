@@ -64,7 +64,7 @@ public class PhaseResourceTest {
     }
 
     @Test
-    public void shouldFailStartingPhaseForBuildWhenTheBuildHasNotBeenRegistered() throws Exception {
+    public void shouldFailStartingPhaseForBuildWhenTheBuildDoesNotExist() throws Exception {
         doThrow(new IllegalArgumentException("error")).when(service).registerPhase(eq(1), isA(Phase.class));
         final Response response = resource.start(1, phase);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
@@ -73,7 +73,7 @@ public class PhaseResourceTest {
     }
 
     @Test
-    public void shouldFailStartingPhaseForBuildWhenItHasAlreadyBeenRegistered() throws Exception {
+    public void shouldFailStartingPhaseForBuildWhenThePhaseAlreadyExists() throws Exception {
         doThrow(DuplicateKeyException.class).when(service).registerPhase(eq(1), isA(Phase.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, phase).getStatus());
         verify(service).registerPhase(eq(1), isA(Phase.class));
@@ -100,13 +100,13 @@ public class PhaseResourceTest {
     }
 
     @Test
-    public void shouldFinishPhase() throws Exception {
+    public void shouldFinishPhaseForBuild() throws Exception {
         resource.finish(1, "phase", state);
         verify(service).updatePhase(eq(1), eq("phase"), isA(State.class));
     }
 
     @Test
-    public void shouldFailFinishingPhaseWhenTheBuildOrPhaseHaveNotBeenRegistered() throws Exception {
+    public void shouldFailFinishingPhaseForBuildWhenTheBuildAndOrPhaseDoNotExist() throws Exception {
         doThrow(new IllegalArgumentException("error")).when(service).updatePhase(eq(1), eq("phase"), isA(State.class));
         final Response response = resource.finish(1, "phase", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
@@ -121,16 +121,7 @@ public class PhaseResourceTest {
     }
 
     @Test
-    public void shouldNotGetPhasesForModuleWhenTheBuildDoesNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndModuleName(eq(1), eq("module"));
-        final Response response = resource.all(1, "module");
-        assertEquals(CONFLICT.getStatusCode(), response.getStatus());
-        assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).findByBuildNumberAndModuleName(eq(1), eq("module"));
-    }
-
-    @Test
-    public void shouldNotGetPhasesForModuleWhenTheBuildOrModuleDoesNotExist() throws Exception {
+    public void shouldNotGetPhasesForModuleWhenTheBuildAndOrModuleDoNotExist() throws Exception {
         doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndModuleName(eq(1), eq("module"));
         final Response response = resource.all(1, "module");
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
@@ -145,7 +136,7 @@ public class PhaseResourceTest {
     }
 
     @Test
-    public void shouldFailStartingPhaseForModuleWhenTheModuleHasNotBeenRegistered() throws Exception {
+    public void shouldFailStartingPhaseForModuleWhenTheBuildAndOrModuleDoNotExist() throws Exception {
         doThrow(new IllegalArgumentException("error")).when(service).registerPhase(eq(1), eq("module"), isA(Phase.class));
         final Response response = resource.start(1, "module", phase);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
@@ -154,7 +145,7 @@ public class PhaseResourceTest {
     }
 
     @Test
-    public void shouldFailStartingPhaseForModuleWhenItHasAlreadyBeenRegistered() throws Exception {
+    public void shouldFailStartingPhaseForModuleWhenThePhaseAlreadyExist() throws Exception {
         doThrow(DuplicateKeyException.class).when(service).registerPhase(eq(1), eq("module"), isA(Phase.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, "module", phase).getStatus());
         verify(service).registerPhase(eq(1), eq("module"), isA(Phase.class));
@@ -168,16 +159,30 @@ public class PhaseResourceTest {
     }
 
     @Test
-    public void shouldNotGetPhaseForModuleWhenBuildDoesNotExist() throws Exception {
+    public void shouldNotGetPhaseForModuleWhenTheBuildAndOrModuleDoNotExist() throws Exception {
         doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"));
-        assertEquals("error", ((Error) resource.get(1, "module","phase").getEntity()).getMessage());
+        assertEquals("error", ((Error) resource.get(1, "module", "phase").getEntity()).getMessage());
     }
 
     @Test
-    public void shouldNotGetPhaseForModuleWhenPhaseDoesNotExist() throws Exception {
+    public void shouldNotGetPhaseForModuleWhenThePhaseDoesNotExist() throws Exception {
         optional = Optional.empty();
         when(service.findByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"))).thenReturn(optional);
         assertEquals("Phase with name [phase] for module with name [module] and build with number [1] cannot be found", ((Error) resource.get(1, "module", "phase").getEntity()).getMessage());
     }
 
+    @Test
+    public void shouldFinishPhaseForModule() throws Exception {
+        resource.finish(1, "module", "phase", state);
+        verify(service).updatePhase(eq(1), eq("module"), eq("phase"), isA(State.class));
+    }
+
+    @Test
+    public void shouldFailFinishingPhaseForModuleWhenTheBuildAndOrModuleAndOrPhaseDoNotExist() throws Exception {
+        doThrow(new IllegalArgumentException("error")).when(service).updatePhase(eq(1), eq("module"), eq("phase"), isA(State.class));
+        final Response response = resource.finish(1, "module", "phase", state);
+        assertEquals(CONFLICT.getStatusCode(), response.getStatus());
+        assertEquals("error", ((Error) response.getEntity()).getMessage());
+        verify(service).updatePhase(eq(1), eq("module"), eq("phase"), isA(State.class));
+    }
 }

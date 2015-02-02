@@ -106,4 +106,24 @@ public class PhaseService extends BaseService {
                 }).
                 orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber)));
     }
+
+    /**
+     * Update the {@link org.spectingular.spock.domain.Phase}.
+     * @param buildNumber The build number.
+     * @param moduleName  the module name.
+     * @param phaseName   The phase name.
+     * @param state       The {@link org.spectingular.spock.domain.State}.
+     * @throws IllegalArgumentException
+     */
+    public void updatePhase(final int buildNumber, final String moduleName, final String phaseName, final State state) throws IllegalArgumentException {
+        findByBuildNumberAndModuleNameAndName(buildNumber, moduleName, phaseName).
+                map(o -> {
+                    final Phase found = o;
+                    found.getState().setStopDate(new Date());
+                    found.getState().setSuccess(state.isSuccess());
+                    phaseRepository.save(found);
+                    return found;
+                }).
+                orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for module with name [%s] and build with number [%d] cannot be found", phaseName, moduleName, buildNumber)));
+    }
 }

@@ -115,7 +115,7 @@ public class PhaseResource {
     }
 
     /**
-     * Gets all the {@link org.spectingular.spock.domain.Phase}s that are registered for the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * Gets all the {@link org.spectingular.spock.domain.Phase}s that are registered for the {@link org.spectingular.spock.domain.Module} matching the given build number.
      * @param buildNumber The build number.
      * @param moduleName  The module name.                    
      * @return response The response.
@@ -133,7 +133,7 @@ public class PhaseResource {
     }
 
     /**
-     * Creates a phase for the build matching the given build number.
+     * Creates a {@link org.spectingular.spock.domain.Phase} for the {@link org.spectingular.spock.domain.Module} matching the given build number.
      * @param buildNumber The build number.
      * @param moduleName  The module name.
      * @param phase       The phase.
@@ -157,7 +157,7 @@ public class PhaseResource {
     }
 
     /**
-     * Gets the {@link org.spectingular.spock.domain.Phase} matching the given name for the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * Gets the {@link org.spectingular.spock.domain.Phase} matching the given name for the {@link org.spectingular.spock.domain.Module} matching the given build number.
      * @param buildNumber The build number.
      * @param moduleName  The module name.
      * @param phaseName   The phase name.
@@ -179,4 +179,27 @@ public class PhaseResource {
         }
         return response;
     }
+
+    /**
+     * Updates the {@link org.spectingular.spock.domain.Phase} for the {@link org.spectingular.spock.domain.Module} matching the given parameters
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @param state       The state.
+     * @return response The response.
+     */
+    @PUT
+    @Path("/modules/{moduleName}/phases/{phaseName}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @Valid State state) {
+        Response response;
+        try {
+            phaseService.updatePhase(buildNumber, moduleName, phaseName, state);
+            response = ok().build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
 }
