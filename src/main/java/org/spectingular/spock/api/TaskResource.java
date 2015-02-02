@@ -24,7 +24,7 @@ import static javax.ws.rs.core.Response.status;
  */
 @Component
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/builds/{buildNumber}/phases/{phaseName}/tasks")
+@Path("/builds/{buildNumber}")
 public class TaskResource {
     @Resource
     private TaskService taskService;
@@ -36,6 +36,7 @@ public class TaskResource {
      * @return response The response.
      */
     @GET
+    @Path("/phases/{phaseName}/tasks")
     public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
@@ -55,6 +56,7 @@ public class TaskResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/phases/{phaseName}/tasks")
     @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
         Response response;
@@ -77,11 +79,11 @@ public class TaskResource {
      * @return response The response.
      */
     @GET
-    @Path("/{taskName}")
+    @Path("/phases/{phaseName}/tasks/{taskName}")
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName) {
         Response response;
         try {
-            final Optional<Task> ot = taskService.findByBuildNumberPhaseNameAndName(buildNumber, phaseName, taskName);
+            final Optional<Task> ot = taskService.findByBuildNumberAndPhaseNameAndName(buildNumber, phaseName, taskName);
             if (ot.isPresent()) {
                 response = ok(ot.get()).build();
             } else {
@@ -102,12 +104,104 @@ public class TaskResource {
      * @return response The response.
      */
     @PUT
-    @Path("/{taskName}")
+    @Path("/phases/{phaseName}/tasks/{taskName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName, final @Valid State state) {
         Response response;
         try {
             taskService.updateTask(buildNumber, phaseName, taskName, state);
+            response = ok().build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Gets all {@link org.spectingular.spock.domain.Task}s that are registered for the {@link org.spectingular.spock.domain.Module} and {@link org.spectingular.spock.domain.Phase} matching the given parameters.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @return response The response.
+     */
+    @GET
+    @Path("/modules/{moduleName}/phases/{phaseName}/tasks")
+    public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName) {
+        Response response;
+        try {
+            response = ok(taskService.findByBuildNumberAndModuleNameAndPhaseName(buildNumber, moduleName, phaseName)).build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Creates a {@link org.spectingular.spock.domain.Task} for the {@link org.spectingular.spock.domain.Build} and {@link org.spectingular.spock.domain.Phase} matching the given parameters
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.                    
+     * @param phaseName   The phase name.
+     * @param task        The {@link org.spectingular.spock.domain.Task}.
+     * @return response The response.
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/modules/{moduleName}/phases/{phaseName}/tasks")
+    @Transactional
+    public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
+        Response response;
+        try {
+            taskService.registerTask(buildNumber, moduleName, phaseName, task);
+            response = ok().build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        } catch (DuplicateKeyException e) {
+            response = status(CONFLICT).entity(new Error("Task with name [%s] has already been registered for phase with name [%s] and module with name [%s] and build with number [%d]", task.getName(), moduleName, phaseName, buildNumber)).build();
+        }
+        return response;
+    }
+
+    /**
+     * Gets the {@link org.spectingular.spock.domain.Task} for the {@link org.spectingular.spock.domain.Build} and {@link org.spectingular.spock.domain.Phase} matching the given parameters.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @return response The response.
+     */
+    @GET
+    @Path("/modules/{moduleName}/phases/{phaseName}/tasks/{taskName}")
+    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName) {
+        Response response;
+        try {
+            final Optional<Task> ot = taskService.findByBuildNumberAndModuleNameAndPhaseNameAndName(buildNumber, moduleName, phaseName, taskName);
+            if (ot.isPresent()) {
+                response = ok(ot.get()).build();
+            } else {
+                response = status(CONFLICT).entity(new Error("Task with name [%s] for phase with name [%s] and module with name [%s] and build with number [%d] cannot be found", taskName, moduleName, phaseName, buildNumber)).build();
+            }
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Updates the {@link org.spectingular.spock.domain.Task} for the {@link org.spectingular.spock.domain.Build} and {@link org.spectingular.spock.domain.Phase} matching the given parameters.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @param state       The state.
+     * @return response The response.
+     */
+    @PUT
+    @Path("/modules/{moduleName}/phases/{phaseName}/tasks/{taskName}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName, final @Valid State state) {
+        Response response;
+        try {
+            taskService.updateTask(buildNumber, moduleName, phaseName, taskName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();

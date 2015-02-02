@@ -251,7 +251,7 @@ public class PhaseServiceTest {
             service.findByBuildNumberAndModuleNameAndName(1, "module", "phase");
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("Module with name [module] for build with number [0] cannot be found", e.getMessage());
+            assertEquals("Module with name [module] for build with number [1] cannot be found", e.getMessage());
         }
         verify(buildRepository).findByNumber(eq(1));
         verify(moduleRepository).findByBuildAndName(eq(build), eq("module"));
@@ -294,7 +294,7 @@ public class PhaseServiceTest {
             service.registerPhase(1, "module", phase);
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("Module with name [module] for build with number [0] cannot be found", e.getMessage());
+            assertEquals("Module with name [module] for build with number [1] cannot be found", e.getMessage());
         }
         verify(buildRepository).findByNumber(eq(1));
         verify(moduleRepository).findByBuildAndName(eq(build), eq("module"));
@@ -363,7 +363,7 @@ public class PhaseServiceTest {
             service.updatePhase(1, "module", "phase", new State());
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("Module with name [module] for build with number [0] cannot be found", e.getMessage());
+            assertEquals("Module with name [module] for build with number [1] cannot be found", e.getMessage());
         }
         verify(buildRepository).findByNumber(eq(1));
         verify(moduleRepository).findByBuildAndName(eq(build), eq("module"));

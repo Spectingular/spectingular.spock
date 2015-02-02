@@ -20,14 +20,16 @@ public class TaskTest {
 
     @Before
     public void setUp() {
-        task = new Task("copy");
+        task = new Task();
     }
 
     @Test
     public void shouldSetValues() throws Exception {
-        assertEquals("copy", task.getName());
+        assertNull(task.getName());
         assertNull(task.getPhase());
         assertNull(task.getState());
+        task.setName("copy");
+        assertEquals("copy", task.getName());
         task.setPhase(phase);
         assertEquals(phase, task.getPhase());
         task.setState(state);
