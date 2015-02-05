@@ -30,19 +30,3 @@ Lets call the instance spock. Complete the following steps to do so.
   mvn clean install sprint-boot:run
   ```
   
-  builds
-    buildnumber
-    state
-    module
-
-  modules
-    naam
-    giturl
-    
-  phases
-    name
-    state
-  
-  tasks
-    name
-    state
