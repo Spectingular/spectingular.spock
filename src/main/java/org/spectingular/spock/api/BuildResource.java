@@ -3,6 +3,7 @@ package org.spectingular.spock.api;
 import org.slf4j.Logger;
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Error;
+import org.spectingular.spock.domain.State;
 import org.spectingular.spock.services.BuildService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,8 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
@@ -51,10 +54,54 @@ public class BuildResource {
         Response response;
         try {
             LOG.debug(format("Register build with number [%d]", build.getNumber()));
-            buildService.persist(build);
+            buildService.register(build);
             response = ok().build();
         } catch (DuplicateKeyException e) {
             response = status(CONFLICT).entity(new Error("Build with number [%d] has already been registered ", build.getNumber())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Gets the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * @param buildNumber The build number.
+     * @return response The response.
+     */
+    @GET
+    @Path("/{buildNumber}")
+    public Response get(final @PathParam("buildNumber") int buildNumber) {
+        Response response;
+        try {
+            LOG.debug(format("Get build with number [%d]", buildNumber));
+            final Optional<Build> ob = buildService.findByNumber(buildNumber);
+            if (ob.isPresent()) {
+                response = ok(ob.get()).build();
+            } else {
+                response = status(CONFLICT).entity(new Error("Build with number [%d] cannot be found", buildNumber)).build();
+            }
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Updates the {@link org.spectingular.spock.domain.Build} matching the given parameters
+     * @param buildNumber The build number.
+     * @param state       The state.
+     * @return response The response.
+     */
+    @PUT
+    @Path("/{buildNumber}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response finish(final @PathParam("buildNumber") int buildNumber, final @Valid State state) {
+        Response response;
+        try {
+            LOG.debug(format("Update build with number [%d]", buildNumber));
+            buildService.update(buildNumber, state);
+            response = ok().build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
         return response;
     }

@@ -6,13 +6,17 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.spectingular.spock.domain.Build;
+import org.spectingular.spock.domain.*;
+import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.services.BuildService;
 import org.springframework.dao.DuplicateKeyException;
 
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static java.util.Optional.of;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
@@ -28,6 +32,11 @@ public class BuildResourceTest {
 
     @Mock
     private BuildService service;
+    private Optional<Build> optional;
+    @Mock
+    private Build build;
+    @Mock
+    private State state;
 
     @Before
     public void setUp() {
@@ -43,13 +52,43 @@ public class BuildResourceTest {
     @Test
     public void shouldRegisterBuild() throws Exception {
         assertEquals(OK.getStatusCode(), resource.start(new Build()).getStatus());
-        verify(service).persist(isA(Build.class));
+        verify(service).register(isA(Build.class));
     }
 
     @Test
     public void shouldFailRegisteringBuildWhenTheBuildAlreadyExists() throws Exception {
-        doThrow(DuplicateKeyException.class).when(service).persist(isA(Build.class));
+        doThrow(DuplicateKeyException.class).when(service).register(isA(Build.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(new Build()).getStatus());
-        verify(service).persist(isA(Build.class));
+        verify(service).register(isA(Build.class));
     }
+
+    @Test
+    public void shouldGetBuild() throws Exception {
+        optional = of(build);
+        when(service.findByNumber(eq(1))).thenReturn(optional);
+        assertEquals(build, resource.get(1).getEntity());
+    }
+
+    @Test
+    public void shouldNotGetBuildWhenBuildDoesNotExist() throws Exception {
+        optional = Optional.empty();
+        when(service.findByNumber(eq(1))).thenReturn(optional);
+        assertEquals("Build with number [1] cannot be found", ((Error) resource.get(1).getEntity()).getMessage());
+    }
+
+    @Test
+    public void shouldFinishBuild() throws Exception {
+        resource.finish(1, state);
+        verify(service).update(eq(1), isA(State.class));
+    }
+
+    @Test
+    public void shouldFailFinishingBuildWhenTheBuildDoesNotExist() throws Exception {
+        doThrow(new IllegalArgumentException("error")).when(service).update(eq(1), isA(State.class));
+        final Response response = resource.finish(1, state);
+        assertEquals(CONFLICT.getStatusCode(), response.getStatus());
+        assertEquals("error", ((Error) response.getEntity()).getMessage());
+        verify(service).update(eq(1), isA(State.class));
+    }
+
 }
