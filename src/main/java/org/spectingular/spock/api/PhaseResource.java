@@ -155,7 +155,7 @@ public class PhaseResource {
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @Valid Phase phase) {
         Response response;
         try {
-            LOG.debug(format("Register phase with name [%s] for build with number [%d] and module with name [%s]", buildNumber, moduleName, phase.getName(), buildNumber, moduleName));
+            LOG.debug(format("Register phase with name [%s] for build with number [%d] and module with name [%s]", phase.getName(), buildNumber, moduleName));
             phaseService.registerPhase(buildNumber, moduleName, phase);
             response = ok().build();
         } catch (IllegalArgumentException e) {
