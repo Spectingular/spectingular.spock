@@ -1,5 +1,6 @@
 package org.spectingular.spock.api;
 
+import org.slf4j.Logger;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.domain.Task;
@@ -15,9 +16,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Endpoint for exposing {@link org.spectingular.spock.domain.Task}s.
@@ -26,6 +29,7 @@ import static javax.ws.rs.core.Response.status;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/builds/{buildNumber}")
 public class TaskResource {
+    private static final Logger LOG = getLogger(TaskResource.class);
     @Resource
     private TaskService taskService;
 
@@ -40,6 +44,7 @@ public class TaskResource {
     public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
+            LOG.debug(format("Get all tasks for build with number [%d] and phase with name [%s]", buildNumber, phaseName));
             response = ok(taskService.findByBuildNumberAndPhaseName(buildNumber, phaseName)).build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -61,6 +66,7 @@ public class TaskResource {
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
         Response response;
         try {
+            LOG.debug(format("Register task with name [%s] for build with number [%d] and phase with name [%s]", task.getName(), buildNumber, phaseName));
             taskService.registerTask(buildNumber, phaseName, task);
             response = ok().build();
         } catch (IllegalArgumentException e) {
@@ -83,6 +89,7 @@ public class TaskResource {
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName) {
         Response response;
         try {
+            LOG.debug(format("Get task with name [%s] for build with number [%d] and phase with name [%s]", taskName, buildNumber, phaseName));
             final Optional<Task> ot = taskService.findByBuildNumberAndPhaseNameAndName(buildNumber, phaseName, taskName);
             if (ot.isPresent()) {
                 response = ok(ot.get()).build();
@@ -109,6 +116,7 @@ public class TaskResource {
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName, final @Valid State state) {
         Response response;
         try {
+            LOG.debug(format("Update task with name [%s] for build with number [%d] and phase with name [%s]", taskName, buildNumber, phaseName));
             taskService.updateTask(buildNumber, phaseName, taskName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {
@@ -129,6 +137,7 @@ public class TaskResource {
     public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
+            LOG.debug(format("Get all tasks for build with number [%d] and module with name [%s] and phase with name [%s]", buildNumber, moduleName, phaseName));
             response = ok(taskService.findByBuildNumberAndModuleNameAndPhaseName(buildNumber, moduleName, phaseName)).build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -139,7 +148,7 @@ public class TaskResource {
     /**
      * Creates a {@link org.spectingular.spock.domain.Task} for the {@link org.spectingular.spock.domain.Build} and {@link org.spectingular.spock.domain.Phase} matching the given parameters
      * @param buildNumber The build number.
-     * @param moduleName  The module name.                    
+     * @param moduleName  The module name.
      * @param phaseName   The phase name.
      * @param task        The {@link org.spectingular.spock.domain.Task}.
      * @return response The response.
@@ -151,6 +160,7 @@ public class TaskResource {
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
         Response response;
         try {
+            LOG.debug(format("Register task with name [%s] for build with number [%d] and module with name [%s] and phase with name [%s]", task.getName(), buildNumber, moduleName, phaseName));
             taskService.registerTask(buildNumber, moduleName, phaseName, task);
             response = ok().build();
         } catch (IllegalArgumentException e) {
@@ -174,6 +184,7 @@ public class TaskResource {
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName) {
         Response response;
         try {
+            LOG.debug(format("Get task with name [%s] for build with number [%d] and module with name [%s] and phase with name [%s]", taskName, buildNumber, moduleName, phaseName));
             final Optional<Task> ot = taskService.findByBuildNumberAndModuleNameAndPhaseNameAndName(buildNumber, moduleName, phaseName, taskName);
             if (ot.isPresent()) {
                 response = ok(ot.get()).build();
@@ -201,6 +212,7 @@ public class TaskResource {
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName, final @Valid State state) {
         Response response;
         try {
+            LOG.debug(format("Get task with name [%s] for build with number [%d] and module with name [%s] and phase with name [%s]", taskName, buildNumber, moduleName, phaseName));
             taskService.updateTask(buildNumber, moduleName, phaseName, taskName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {

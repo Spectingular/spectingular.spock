@@ -1,5 +1,6 @@
 package org.spectingular.spock.api;
 
+import org.slf4j.Logger;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Phase;
 import org.spectingular.spock.domain.State;
@@ -15,9 +16,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Endpoint for exposing phases.
@@ -26,6 +29,7 @@ import static javax.ws.rs.core.Response.status;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/builds/{buildNumber}")
 public class PhaseResource {
+    private static final Logger LOG = getLogger(PhaseResource.class);
     @Resource
     private PhaseService phaseService;
 
@@ -39,6 +43,7 @@ public class PhaseResource {
     public Response all(final @PathParam("buildNumber") int buildNumber) {
         Response response;
         try {
+            LOG.debug(format("Get all phases for build with number [%d]", buildNumber));
             response = ok(phaseService.findByBuildNumber(buildNumber)).build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -60,6 +65,7 @@ public class PhaseResource {
     public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Phase phase) {
         Response response;
         try {
+            LOG.debug(format("Register phase with name [%s] for build with number [%d]", phase.getName(), buildNumber));
             phaseService.registerPhase(buildNumber, phase);
             response = ok().build();
         } catch (IllegalArgumentException e) {
@@ -81,6 +87,7 @@ public class PhaseResource {
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
+            LOG.debug(format("Get phase with name [%s] for build with number [%d]", phaseName, buildNumber));
             final Optional<Phase> op = phaseService.findByBuildNumberAndName(buildNumber, phaseName);
             if (op.isPresent()) {
                 response = ok(op.get()).build();
@@ -106,6 +113,7 @@ public class PhaseResource {
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid State state) {
         Response response;
         try {
+            LOG.debug(format("Update phase with name [%s] for build with number [%d]", phaseName, buildNumber));
             phaseService.updatePhase(buildNumber, phaseName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {
@@ -117,7 +125,7 @@ public class PhaseResource {
     /**
      * Gets all the {@link org.spectingular.spock.domain.Phase}s that are registered for the {@link org.spectingular.spock.domain.Module} matching the given build number.
      * @param buildNumber The build number.
-     * @param moduleName  The module name.                    
+     * @param moduleName  The module name.
      * @return response The response.
      */
     @GET
@@ -125,6 +133,7 @@ public class PhaseResource {
     public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
         Response response;
         try {
+            LOG.debug(format("Get all phases for build with number [%d] and module with name [%s]", buildNumber, moduleName));
             response = ok(phaseService.findByBuildNumberAndModuleName(buildNumber, moduleName)).build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -146,6 +155,7 @@ public class PhaseResource {
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @Valid Phase phase) {
         Response response;
         try {
+            LOG.debug(format("Register phase with name [%s] for build with number [%d] and module with name [%s]", buildNumber, moduleName, phase.getName(), buildNumber, moduleName));
             phaseService.registerPhase(buildNumber, moduleName, phase);
             response = ok().build();
         } catch (IllegalArgumentException e) {
@@ -168,6 +178,7 @@ public class PhaseResource {
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
+            LOG.debug(format("Get phase with name [%s] for build with number [%d] and module with name [%s]", phaseName, buildNumber, moduleName));
             final Optional<Phase> op = phaseService.findByBuildNumberAndModuleNameAndName(buildNumber, moduleName, phaseName);
             if (op.isPresent()) {
                 response = ok(op.get()).build();
@@ -194,6 +205,7 @@ public class PhaseResource {
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @Valid State state) {
         Response response;
         try {
+            LOG.debug(format("Update phase with name [%s] for build with number [%d] and module with name [%s]", phaseName, buildNumber, moduleName));
             phaseService.updatePhase(buildNumber, moduleName, phaseName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {

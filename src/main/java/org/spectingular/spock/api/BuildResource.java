@@ -1,5 +1,6 @@
 package org.spectingular.spock.api;
 
+import org.slf4j.Logger;
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.services.BuildService;
@@ -12,9 +13,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Endpoint for exposing the builds.
@@ -23,6 +26,7 @@ import static javax.ws.rs.core.Response.status;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/builds")
 public class BuildResource {
+    private static final Logger LOG = getLogger(BuildResource.class);
     @Resource
     private BuildService buildService;
 
@@ -32,6 +36,7 @@ public class BuildResource {
      */
     @GET
     public Response builds() {
+        LOG.debug("Get all builds");
         return ok(buildService.findAll()).build();
     }
 
@@ -45,6 +50,7 @@ public class BuildResource {
     public Response start(final @Valid Build build) {
         Response response;
         try {
+            LOG.debug(format("Register build with number [%d]", build.getNumber()));
             buildService.persist(build);
             response = ok().build();
         } catch (DuplicateKeyException e) {

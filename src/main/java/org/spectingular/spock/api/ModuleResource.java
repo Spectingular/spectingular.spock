@@ -1,5 +1,6 @@
 package org.spectingular.spock.api;
 
+import org.slf4j.Logger;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Module;
 import org.spectingular.spock.domain.State;
@@ -15,9 +16,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Endpoint for exposing the modules.
@@ -26,6 +29,7 @@ import static javax.ws.rs.core.Response.status;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/builds/{buildNumber}")
 public class ModuleResource {
+    private static final Logger LOG = getLogger(ModuleResource.class);
     @Resource
     private ModuleService moduleService;
 
@@ -39,6 +43,7 @@ public class ModuleResource {
     public Response all(final @PathParam("buildNumber") int buildNumber) {
         Response response;
         try {
+            LOG.debug(format("Get all modules for build with number [%d]", buildNumber));
             response = ok(moduleService.findByBuildNumber(buildNumber)).build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -59,6 +64,7 @@ public class ModuleResource {
     public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Module module) {
         Response response;
         try {
+            LOG.debug(format("Register module with name [%s] for build with number [%d]", module.getName(), buildNumber));
             moduleService.registerModule(buildNumber, module);
             response = ok().build();
         } catch (IllegalArgumentException e) {
@@ -80,6 +86,7 @@ public class ModuleResource {
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
         Response response;
         try {
+            LOG.debug(format("Get module with name [%s] for build with number [%d]", moduleName, buildNumber));
             final Optional<Module> op = moduleService.findByBuildNumberAndName(buildNumber, moduleName);
             if (op.isPresent()) {
                 response = ok(op.get()).build();
@@ -105,6 +112,7 @@ public class ModuleResource {
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @Valid State state) {
         Response response;
         try {
+            LOG.debug(format("Update module with name [%s] for build with number [%d]", moduleName, buildNumber));
             moduleService.updateModule(buildNumber, moduleName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {
