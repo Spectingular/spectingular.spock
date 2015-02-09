@@ -44,11 +44,10 @@ public class BaseService {
      * @throws IllegalArgumentException
      */
     protected <T> T findModule(final int buildNumber, final String moduleName, final Function<Module, T> fn) throws IllegalArgumentException {
-        return findBuild(buildNumber, (Function<Build, T>) build -> {
-            return moduleRepository.findByBuildAndName(build, moduleName)
-                    .map(o -> fn.apply(o))
-                    .orElseThrow(() -> new IllegalArgumentException(format("Module with name [%s] for build with number [%d] cannot be found", moduleName, buildNumber)));
-        });
+        return findBuild(buildNumber, (Function<Build, T>) build ->
+                moduleRepository.findByBuildAndName(build, moduleName)
+                        .map(o -> fn.apply(o))
+                        .orElseThrow(() -> new IllegalArgumentException(format("Module with name [%s] for build with number [%d] cannot be found", moduleName, buildNumber))));
     }
 
     /**
@@ -61,11 +60,9 @@ public class BaseService {
      * @throws IllegalArgumentException
      */
     protected <T> T findPhase(final int buildNumber, final String phaseName, final Function<Phase, T> fn) throws IllegalArgumentException {
-        return findBuild(buildNumber, (Function<Build, T>) build -> {
-            return phaseRepository.findByBuildAndName(build, phaseName)
-                    .map(o -> fn.apply(o))
-                    .orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber)));
-        });
+        return findBuild(buildNumber, (Function<Build, T>) build -> phaseRepository.findByBuildAndName(build, phaseName)
+                .map(o -> fn.apply(o))
+                .orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber))));
     }
 
     /**
@@ -79,10 +76,9 @@ public class BaseService {
      * @throws IllegalArgumentException
      */
     protected <T> T findPhase(final int buildNumber, final String moduleName, final String phaseName, final Function<Phase, T> fn) throws IllegalArgumentException {
-        return findModule(buildNumber, moduleName, (Function<Module, T>) module -> {
-            return phaseRepository.findByModuleAndName(module, phaseName)
-                    .map(o -> fn.apply(o))
-                    .orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for module with name [%s] and build with number [%d] cannot be found", phaseName, moduleName, buildNumber)));
-        });
+        return findModule(buildNumber, moduleName, (Function<Module, T>) module ->
+                phaseRepository.findByModuleAndName(module, phaseName)
+                        .map(o -> fn.apply(o))
+                        .orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for module with name [%s] and build with number [%d] cannot be found", phaseName, moduleName, buildNumber))));
     }
 }
