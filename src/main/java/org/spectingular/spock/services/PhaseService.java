@@ -61,7 +61,7 @@ public class PhaseService extends BaseService {
      * @param phase       The {@link org.spectingular.spock.domain.Phase}.
      * @throws IllegalArgumentException
      */
-    public void registerPhase(final int buildNumber, final Phase phase) throws IllegalArgumentException {
+    public void register(final int buildNumber, final Phase phase) throws IllegalArgumentException {
         findBuild(buildNumber, build -> {
                     phase.setBuild(build);
                     phase.setState(new State());
@@ -78,7 +78,7 @@ public class PhaseService extends BaseService {
      * @param phase       The {@link org.spectingular.spock.domain.Phase}.
      * @throws IllegalArgumentException
      */
-    public void registerPhase(final int buildNumber, final String moduleName, final Phase phase) throws IllegalArgumentException {
+    public void register(final int buildNumber, final String moduleName, final Phase phase) throws IllegalArgumentException {
         findModule(buildNumber, moduleName, module -> {
                     phase.setModule(module);
                     phase.setState(new State());
@@ -95,7 +95,7 @@ public class PhaseService extends BaseService {
      * @param state       The {@link org.spectingular.spock.domain.State}.
      * @throws IllegalArgumentException
      */
-    public void updatePhase(final int buildNumber, final String phaseName, final State state) throws IllegalArgumentException {
+    public void update(final int buildNumber, final String phaseName, final State state) throws IllegalArgumentException {
         findByBuildNumberAndName(buildNumber, phaseName).
                 map(o -> {
                     final Phase found = o;
@@ -115,7 +115,7 @@ public class PhaseService extends BaseService {
      * @param state       The {@link org.spectingular.spock.domain.State}.
      * @throws IllegalArgumentException
      */
-    public void updatePhase(final int buildNumber, final String moduleName, final String phaseName, final State state) throws IllegalArgumentException {
+    public void update(final int buildNumber, final String moduleName, final String phaseName, final State state) throws IllegalArgumentException {
         findByBuildNumberAndModuleNameAndName(buildNumber, moduleName, phaseName).
                 map(o -> {
                     final Phase found = o;

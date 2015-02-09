@@ -41,7 +41,7 @@ public class ModuleService extends BaseService {
      * @param module       The {@link org.spectingular.spock.domain.Module}.
      * @throws IllegalArgumentException
      */
-    public void registerModule(final int buildNumber, final Module module) throws IllegalArgumentException {
+    public void register(final int buildNumber, final Module module) throws IllegalArgumentException {
         findBuild(buildNumber, build -> {
                     module.setBuild(build);
                     module.setState(new State());
@@ -58,7 +58,7 @@ public class ModuleService extends BaseService {
      * @param state       The {@link org.spectingular.spock.domain.State}.
      * @throws IllegalArgumentException
      */
-    public void updateModule(final int buildNumber, final String moduleName, final State state) throws IllegalArgumentException {
+    public void update(final int buildNumber, final String moduleName, final State state) throws IllegalArgumentException {
         findByBuildNumberAndName(buildNumber, moduleName).
                 map(o -> {
                     final Module found = o;

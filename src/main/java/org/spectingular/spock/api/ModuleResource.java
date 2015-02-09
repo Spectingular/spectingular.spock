@@ -65,7 +65,7 @@ public class ModuleResource {
         Response response;
         try {
             LOG.debug(format("Register module with name [%s] for build with number [%d]", module.getName(), buildNumber));
-            moduleService.registerModule(buildNumber, module);
+            moduleService.register(buildNumber, module);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -113,7 +113,7 @@ public class ModuleResource {
         Response response;
         try {
             LOG.debug(format("Update module with name [%s] for build with number [%d]", moduleName, buildNumber));
-            moduleService.updateModule(buildNumber, moduleName, state);
+            moduleService.update(buildNumber, moduleName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();

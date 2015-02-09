@@ -66,7 +66,7 @@ public class PhaseResource {
         Response response;
         try {
             LOG.debug(format("Register phase with name [%s] for build with number [%d]", phase.getName(), buildNumber));
-            phaseService.registerPhase(buildNumber, phase);
+            phaseService.register(buildNumber, phase);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -114,7 +114,7 @@ public class PhaseResource {
         Response response;
         try {
             LOG.debug(format("Update phase with name [%s] for build with number [%d]", phaseName, buildNumber));
-            phaseService.updatePhase(buildNumber, phaseName, state);
+            phaseService.update(buildNumber, phaseName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -156,7 +156,7 @@ public class PhaseResource {
         Response response;
         try {
             LOG.debug(format("Register phase with name [%s] for build with number [%d] and module with name [%s]", phase.getName(), buildNumber, moduleName));
-            phaseService.registerPhase(buildNumber, moduleName, phase);
+            phaseService.register(buildNumber, moduleName, phase);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -206,7 +206,7 @@ public class PhaseResource {
         Response response;
         try {
             LOG.debug(format("Update phase with name [%s] for build with number [%d] and module with name [%s]", phaseName, buildNumber, moduleName));
-            phaseService.updatePhase(buildNumber, moduleName, phaseName, state);
+            phaseService.update(buildNumber, moduleName, phaseName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();

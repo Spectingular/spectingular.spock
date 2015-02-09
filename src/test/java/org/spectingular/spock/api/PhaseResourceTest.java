@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.*;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
@@ -60,28 +61,28 @@ public class PhaseResourceTest {
     @Test
     public void shouldStartPhaseForBuild() throws Exception {
         resource.start(1, phase);
-        verify(service).registerPhase(eq(1), isA(Phase.class));
+        verify(service).register(eq(1), isA(Phase.class));
     }
 
     @Test
     public void shouldFailStartingPhaseForBuildWhenTheBuildDoesNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).registerPhase(eq(1), isA(Phase.class));
+        doThrow(new IllegalArgumentException("error")).when(service).register(eq(1), isA(Phase.class));
         final Response response = resource.start(1, phase);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).registerPhase(eq(1), isA(Phase.class));
+        verify(service).register(eq(1), isA(Phase.class));
     }
 
     @Test
     public void shouldFailStartingPhaseForBuildWhenThePhaseAlreadyExists() throws Exception {
-        doThrow(DuplicateKeyException.class).when(service).registerPhase(eq(1), isA(Phase.class));
+        doThrow(DuplicateKeyException.class).when(service).register(eq(1), isA(Phase.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, phase).getStatus());
-        verify(service).registerPhase(eq(1), isA(Phase.class));
+        verify(service).register(eq(1), isA(Phase.class));
     }
 
     @Test
     public void shouldGetPhaseForBuild() throws Exception {
-        optional = Optional.of(phase);
+        optional = of(phase);
         when(service.findByBuildNumberAndName(eq(1), eq("phase"))).thenReturn(optional);
         assertEquals(phase, resource.get(1, "phase").getEntity());
     }
@@ -94,7 +95,7 @@ public class PhaseResourceTest {
 
     @Test
     public void shouldNotGetPhaseForBuildWhenPhaseDoesNotExist() throws Exception {
-        optional = Optional.empty();
+        optional = empty();
         when(service.findByBuildNumberAndName(eq(1), eq("phase"))).thenReturn(optional);
         assertEquals("Phase with name [phase] for build with number [1] cannot be found", ((Error) resource.get(1, "phase").getEntity()).getMessage());
     }
@@ -102,16 +103,16 @@ public class PhaseResourceTest {
     @Test
     public void shouldFinishPhaseForBuild() throws Exception {
         resource.finish(1, "phase", state);
-        verify(service).updatePhase(eq(1), eq("phase"), isA(State.class));
+        verify(service).update(eq(1), eq("phase"), isA(State.class));
     }
 
     @Test
     public void shouldFailFinishingPhaseForBuildWhenTheBuildAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).updatePhase(eq(1), eq("phase"), isA(State.class));
+        doThrow(new IllegalArgumentException("error")).when(service).update(eq(1), eq("phase"), isA(State.class));
         final Response response = resource.finish(1, "phase", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).updatePhase(eq(1), eq("phase"), isA(State.class));
+        verify(service).update(eq(1), eq("phase"), isA(State.class));
     }
 
     @Test
@@ -132,28 +133,28 @@ public class PhaseResourceTest {
     @Test
     public void shouldStartPhaseForModule() throws Exception {
         resource.start(1, "module", phase);
-        verify(service).registerPhase(eq(1), eq("module"), isA(Phase.class));
+        verify(service).register(eq(1), eq("module"), isA(Phase.class));
     }
 
     @Test
     public void shouldFailStartingPhaseForModuleWhenTheBuildAndOrModuleDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).registerPhase(eq(1), eq("module"), isA(Phase.class));
+        doThrow(new IllegalArgumentException("error")).when(service).register(eq(1), eq("module"), isA(Phase.class));
         final Response response = resource.start(1, "module", phase);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).registerPhase(eq(1), eq("module"), isA(Phase.class));
+        verify(service).register(eq(1), eq("module"), isA(Phase.class));
     }
 
     @Test
     public void shouldFailStartingPhaseForModuleWhenThePhaseAlreadyExist() throws Exception {
-        doThrow(DuplicateKeyException.class).when(service).registerPhase(eq(1), eq("module"), isA(Phase.class));
+        doThrow(DuplicateKeyException.class).when(service).register(eq(1), eq("module"), isA(Phase.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, "module", phase).getStatus());
-        verify(service).registerPhase(eq(1), eq("module"), isA(Phase.class));
+        verify(service).register(eq(1), eq("module"), isA(Phase.class));
     }
 
     @Test
     public void shouldGetPhaseForModule() throws Exception {
-        optional = Optional.of(phase);
+        optional = of(phase);
         when(service.findByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"))).thenReturn(optional);
         assertEquals(phase, resource.get(1, "module", "phase").getEntity());
     }
@@ -166,7 +167,7 @@ public class PhaseResourceTest {
 
     @Test
     public void shouldNotGetPhaseForModuleWhenThePhaseDoesNotExist() throws Exception {
-        optional = Optional.empty();
+        optional = empty();
         when(service.findByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"))).thenReturn(optional);
         assertEquals("Phase with name [phase] for module with name [module] and build with number [1] cannot be found", ((Error) resource.get(1, "module", "phase").getEntity()).getMessage());
     }
@@ -174,15 +175,15 @@ public class PhaseResourceTest {
     @Test
     public void shouldFinishPhaseForModule() throws Exception {
         resource.finish(1, "module", "phase", state);
-        verify(service).updatePhase(eq(1), eq("module"), eq("phase"), isA(State.class));
+        verify(service).update(eq(1), eq("module"), eq("phase"), isA(State.class));
     }
 
     @Test
     public void shouldFailFinishingPhaseForModuleWhenTheBuildAndOrModuleAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).updatePhase(eq(1), eq("module"), eq("phase"), isA(State.class));
+        doThrow(new IllegalArgumentException("error")).when(service).update(eq(1), eq("module"), eq("phase"), isA(State.class));
         final Response response = resource.finish(1, "module", "phase", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).updatePhase(eq(1), eq("module"), eq("phase"), isA(State.class));
+        verify(service).update(eq(1), eq("module"), eq("phase"), isA(State.class));
     }
 }

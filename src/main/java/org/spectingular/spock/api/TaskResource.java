@@ -67,7 +67,7 @@ public class TaskResource {
         Response response;
         try {
             LOG.debug(format("Register task with name [%s] for build with number [%d] and phase with name [%s]", task.getName(), buildNumber, phaseName));
-            taskService.registerTask(buildNumber, phaseName, task);
+            taskService.register(buildNumber, phaseName, task);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -117,7 +117,7 @@ public class TaskResource {
         Response response;
         try {
             LOG.debug(format("Update task with name [%s] for build with number [%d] and phase with name [%s]", taskName, buildNumber, phaseName));
-            taskService.updateTask(buildNumber, phaseName, taskName, state);
+            taskService.update(buildNumber, phaseName, taskName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -161,7 +161,7 @@ public class TaskResource {
         Response response;
         try {
             LOG.debug(format("Register task with name [%s] for build with number [%d] and module with name [%s] and phase with name [%s]", task.getName(), buildNumber, moduleName, phaseName));
-            taskService.registerTask(buildNumber, moduleName, phaseName, task);
+            taskService.register(buildNumber, moduleName, phaseName, task);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
@@ -213,7 +213,7 @@ public class TaskResource {
         Response response;
         try {
             LOG.debug(format("Get task with name [%s] for build with number [%d] and module with name [%s] and phase with name [%s]", taskName, buildNumber, moduleName, phaseName));
-            taskService.updateTask(buildNumber, moduleName, phaseName, taskName, state);
+            taskService.update(buildNumber, moduleName, phaseName, taskName, state);
             response = ok().build();
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();

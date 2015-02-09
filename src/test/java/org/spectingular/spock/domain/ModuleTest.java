@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 /** Test class for {@link Module}. */
@@ -26,6 +27,7 @@ public class ModuleTest {
     public void shouldSetValues() throws Exception {
         assertNull(module.getName());
         assertNull(module.getBuild());
+        assertNull(module.getState());
         module.setName("module");
         assertEquals("module", module.getName());
         module.setBuild(build);

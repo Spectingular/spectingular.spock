@@ -101,7 +101,7 @@ public class ModuleServiceTest {
         buildOptional = of(build);
         moduleOptional = of(module);
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
-        service.registerModule(1, module);
+        service.register(1, module);
         verify(module).setState(isA(State.class));
         verify(module).setBuild(eq(build));
         verify(buildRepository).findByNumber(eq(1));
@@ -113,7 +113,7 @@ public class ModuleServiceTest {
         buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
-            service.registerModule(1, module);
+            service.register(1, module);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Build with number [1] cannot be found", e.getMessage());
@@ -128,7 +128,7 @@ public class ModuleServiceTest {
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         doThrow(DuplicateKeyException.class).when(moduleRepository).save(eq(module));
         try {
-            service.registerModule(1, module);
+            service.register(1, module);
             fail();
         } catch (DuplicateKeyException e) {
         }
@@ -146,7 +146,7 @@ public class ModuleServiceTest {
         assertFalse(state.isSuccess());
         final State updatedState = new State();
         updatedState.setSuccess(true);
-        service.updateModule(1, "module", updatedState);
+        service.update(1, "module", updatedState);
         verify(state).setStopDate(isA(Date.class));
         verify(state).setSuccess(isA(Boolean.class));
         verify(buildRepository).findByNumber(eq(1));
@@ -159,7 +159,7 @@ public class ModuleServiceTest {
         buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
-            service.updateModule(1, "module", new State());
+            service.update(1, "module", new State());
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Build with number [1] cannot be found", e.getMessage());
@@ -174,7 +174,7 @@ public class ModuleServiceTest {
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(moduleRepository.findByBuildAndName(eq(build), eq("module"))).thenReturn(moduleOptional);
         try {
-            service.updateModule(1, "module", new State());
+            service.update(1, "module", new State());
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Module with name [module] for build with number [1] cannot be found", e.getMessage());

@@ -65,23 +65,23 @@ public class TaskResourceTest {
     @Test
     public void shouldStartTaskForBuild() throws Exception {
         resource.start(1, "phase", task);
-        verify(service).registerTask(eq(1), eq("phase"), isA(Task.class));
+        verify(service).register(eq(1), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldFailStartingTaskForBuildWhenTheBuildAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).registerTask(eq(1), eq("phase"), isA(Task.class));
+        doThrow(new IllegalArgumentException("error")).when(service).register(eq(1), eq("phase"), isA(Task.class));
         final Response response = resource.start(1, "phase", task);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).registerTask(eq(1), eq("phase"), isA(Task.class));
+        verify(service).register(eq(1), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldFailStartingTaskForBuildWhenTheTaskAlreadyExists() throws Exception {
-        doThrow(DuplicateKeyException.class).when(service).registerTask(eq(1), eq("phase"), isA(Task.class));
+        doThrow(DuplicateKeyException.class).when(service).register(eq(1), eq("phase"), isA(Task.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, "phase", task).getStatus());
-        verify(service).registerTask(eq(1), eq("phase"), isA(Task.class));
+        verify(service).register(eq(1), eq("phase"), isA(Task.class));
     }
 
     @Test
@@ -107,16 +107,16 @@ public class TaskResourceTest {
     @Test
     public void shouldFinishTaskForBuild() throws Exception {
         resource.finish(1, "phase", "task", state);
-        verify(service).updateTask(eq(1), eq("phase"), eq("task"), isA(State.class));
+        verify(service).update(eq(1), eq("phase"), eq("task"), isA(State.class));
     }
 
     @Test
     public void shouldFailFinishingPhaseForBuildWhenTheBuildAndOrPhaseHaveNotBeenRegistered() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).updateTask(eq(1), eq("phase"), eq("task"), isA(State.class));
+        doThrow(new IllegalArgumentException("error")).when(service).update(eq(1), eq("phase"), eq("task"), isA(State.class));
         final Response response = resource.finish(1, "phase", "task", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).updateTask(eq(1), eq("phase"), eq("task"), isA(State.class));
+        verify(service).update(eq(1), eq("phase"), eq("task"), isA(State.class));
     }
 
     @Test
@@ -137,23 +137,23 @@ public class TaskResourceTest {
     @Test
     public void shouldStartTaskForModule() throws Exception {
         resource.start(1, "module", "phase", task);
-        verify(service).registerTask(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        verify(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldFailStartingTaskForModuleWhenTheBuildAndOrModuleAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).registerTask(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        doThrow(new IllegalArgumentException("error")).when(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
         final Response response = resource.start(1, "module", "phase", task);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).registerTask(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        verify(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldFailStartingTaskForModuleWhenTheTaskAlreadyExists() throws Exception {
-        doThrow(DuplicateKeyException.class).when(service).registerTask(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        doThrow(DuplicateKeyException.class).when(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, "module", "phase", task).getStatus());
-        verify(service).registerTask(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        verify(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
     }
 
     @Test
@@ -179,15 +179,15 @@ public class TaskResourceTest {
     @Test
     public void shouldFinishTaskForModule() throws Exception {
         resource.finish(1, "module", "phase", "task", state);
-        verify(service).updateTask(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
+        verify(service).update(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
     }
 
     @Test
     public void shouldFailFinishingPhaseForModuleWhenTheBuildAndOrModuleAndOrPhaseHaveNotBeenRegistered() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).updateTask(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
+        doThrow(new IllegalArgumentException("error")).when(service).update(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
         final Response response = resource.finish(1, "module", "phase", "task", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).updateTask(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
+        verify(service).update(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
     }
 }

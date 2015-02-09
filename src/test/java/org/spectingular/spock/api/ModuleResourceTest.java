@@ -61,23 +61,23 @@ public class ModuleResourceTest {
     @Test
     public void shouldStartModule() throws Exception {
         assertEquals(OK.getStatusCode(), resource.start(1, module).getStatus());
-        verify(service).registerModule(eq(1), isA(Module.class));
+        verify(service).register(eq(1), isA(Module.class));
     }
 
     @Test
     public void shouldFailStartingModuleWhenTheBuildDoesNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).registerModule(eq(1), isA(Module.class));
+        doThrow(new IllegalArgumentException("error")).when(service).register(eq(1), isA(Module.class));
         final Response response = resource.start(1, module);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).registerModule(eq(1), isA(Module.class));
+        verify(service).register(eq(1), isA(Module.class));
     }
 
     @Test
     public void shouldFailStartingModuleWhenTheModuleAlreadyExists() throws Exception {
-        doThrow(DuplicateKeyException.class).when(service).registerModule(eq(1), isA(Module.class));
+        doThrow(DuplicateKeyException.class).when(service).register(eq(1), isA(Module.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, module).getStatus());
-        verify(service).registerModule(eq(1), isA(Module.class));
+        verify(service).register(eq(1), isA(Module.class));
     }
 
     @Test
@@ -103,16 +103,16 @@ public class ModuleResourceTest {
     @Test
     public void shouldFinishModule() throws Exception {
         resource.finish(1, "module", state);
-        verify(service).updateModule(eq(1), eq("module"), isA(State.class));
+        verify(service).update(eq(1), eq("module"), isA(State.class));
     }
 
     @Test
     public void shouldFailFinishingModuleWhenTheBuildAndOrModuleDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).updateModule(eq(1), eq("module"), isA(State.class));
+        doThrow(new IllegalArgumentException("error")).when(service).update(eq(1), eq("module"), isA(State.class));
         final Response response = resource.finish(1, "module", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).updateModule(eq(1), eq("module"), isA(State.class));
+        verify(service).update(eq(1), eq("module"), isA(State.class));
     }
 
 }

@@ -147,7 +147,7 @@ public class TaskServiceTest {
         phaseOptional = of(phase);
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(phaseRepository.findByBuildAndName(eq(build), eq("phase"))).thenReturn(phaseOptional);
-        service.registerTask(1, "phase", task);
+        service.register(1, "phase", task);
         verify(task).setState(isA(State.class));
         verify(task).setPhase(eq(phase));
         verify(buildRepository).findByNumber(eq(1));
@@ -160,7 +160,7 @@ public class TaskServiceTest {
         buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
-            service.registerTask(1, "phase", task);
+            service.register(1, "phase", task);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Build with number [1] cannot be found", e.getMessage());
@@ -175,7 +175,7 @@ public class TaskServiceTest {
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(phaseRepository.findByBuildAndName(eq(build), eq("phase"))).thenReturn(phaseOptional);
         try {
-            service.registerTask(1, "phase", task);
+            service.register(1, "phase", task);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Phase with name [phase] for build with number [1] cannot be found", e.getMessage());
@@ -192,7 +192,7 @@ public class TaskServiceTest {
         when(phaseRepository.findByBuildAndName(eq(build), eq("phase"))).thenReturn(phaseOptional);
         doThrow(DuplicateKeyException.class).when(taskRepository).save(eq(task));
         try {
-            service.registerTask(1, "phase", task);
+            service.register(1, "phase", task);
             fail();
         } catch (DuplicateKeyException e) {
         }
@@ -216,7 +216,7 @@ public class TaskServiceTest {
         assertFalse(state.isSuccess());
         final State updatedState = new State();
         updatedState.setSuccess(true);
-        service.updateTask(1, "phase", "task", updatedState);
+        service.update(1, "phase", "task", updatedState);
         verify(state).setStopDate(isA(Date.class));
         verify(state).setSuccess(isA(Boolean.class));
         verify(buildRepository).findByNumber(eq(1));
@@ -230,7 +230,7 @@ public class TaskServiceTest {
         buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
-            service.updateTask(1, "phase", "task", new State());
+            service.update(1, "phase", "task", new State());
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Build with number [1] cannot be found", e.getMessage());
@@ -245,7 +245,7 @@ public class TaskServiceTest {
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(phaseRepository.findByBuildAndName(eq(build), eq("phase"))).thenReturn(phaseOptional);
         try {
-            service.updateTask(1, "phase", "task", new State());
+            service.update(1, "phase", "task", new State());
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Phase with name [phase] for build with number [1] cannot be found", e.getMessage());
@@ -389,7 +389,7 @@ public class TaskServiceTest {
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(moduleRepository.findByBuildAndName(eq(build), eq("module"))).thenReturn(moduleOptional);
         when(phaseRepository.findByModuleAndName(eq(module), eq("phase"))).thenReturn(phaseOptional);
-        service.registerTask(1, "module", "phase", task);
+        service.register(1, "module", "phase", task);
         verify(task).setState(isA(State.class));
         verify(task).setPhase(eq(phase));
         verify(buildRepository).findByNumber(eq(1));
@@ -403,7 +403,7 @@ public class TaskServiceTest {
         buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
-            service.registerTask(1, "module","phase", task);
+            service.register(1, "module", "phase", task);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Build with number [1] cannot be found", e.getMessage());
@@ -418,7 +418,7 @@ public class TaskServiceTest {
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(moduleRepository.findByBuildAndName(eq(build), eq("module"))).thenReturn(moduleOptional);
         try {
-            service.registerTask(1, "module", "phase", task);
+            service.register(1, "module", "phase", task);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Module with name [module] for build with number [1] cannot be found", e.getMessage());
@@ -436,7 +436,7 @@ public class TaskServiceTest {
         when(moduleRepository.findByBuildAndName(eq(build), eq("module"))).thenReturn(moduleOptional);
         when(phaseRepository.findByModuleAndName(eq(module), eq("phase"))).thenReturn(phaseOptional);
         try {
-            service.registerTask(1, "module", "phase", task);
+            service.register(1, "module", "phase", task);
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Phase with name [phase] for module with name [module] and build with number [1] cannot be found", e.getMessage());
@@ -457,7 +457,7 @@ public class TaskServiceTest {
         when(phaseRepository.findByModuleAndName(eq(module), eq("phase"))).thenReturn(phaseOptional);
         doThrow(DuplicateKeyException.class).when(taskRepository).save(eq(task));
         try {
-            service.registerTask(1, "module","phase", task);
+            service.register(1, "module", "phase", task);
             fail();
         } catch (DuplicateKeyException e) {
         }
@@ -484,7 +484,7 @@ public class TaskServiceTest {
         assertFalse(state.isSuccess());
         final State updatedState = new State();
         updatedState.setSuccess(true);
-        service.updateTask(1, "module", "phase", "task", updatedState);
+        service.update(1, "module", "phase", "task", updatedState);
         verify(state).setStopDate(isA(Date.class));
         verify(state).setSuccess(isA(Boolean.class));
         verify(buildRepository).findByNumber(eq(1));
@@ -499,7 +499,7 @@ public class TaskServiceTest {
         buildOptional = empty();
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         try {
-            service.updateTask(1, "module", "phase", "task", new State());
+            service.update(1, "module", "phase", "task", new State());
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Build with number [1] cannot be found", e.getMessage());
@@ -514,7 +514,7 @@ public class TaskServiceTest {
         when(buildRepository.findByNumber(eq(1))).thenReturn(buildOptional);
         when(moduleRepository.findByBuildAndName(eq(build), eq("module"))).thenReturn(moduleOptional);
         try {
-            service.updateTask(1, "module", "phase", "task", new State());
+            service.update(1, "module", "phase", "task", new State());
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Module with name [module] for build with number [1] cannot be found", e.getMessage());
@@ -532,7 +532,7 @@ public class TaskServiceTest {
         when(moduleRepository.findByBuildAndName(eq(build), eq("module"))).thenReturn(moduleOptional);
         when(phaseRepository.findByModuleAndName(eq(module), eq("phase"))).thenReturn(phaseOptional);
         try {
-            service.updateTask(1, "module", "phase", "task", new State());
+            service.update(1, "module", "phase", "task", new State());
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("Phase with name [phase] for module with name [module] and build with number [1] cannot be found", e.getMessage());

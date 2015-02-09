@@ -65,7 +65,7 @@ public class TaskService extends BaseService {
      * @param task        The {@link org.spectingular.spock.domain.Task}.
      * @throws IllegalArgumentException
      */
-    public void registerTask(final int buildNumber, final String phaseName, final Task task) throws IllegalArgumentException {
+    public void register(final int buildNumber, final String phaseName, final Task task) throws IllegalArgumentException {
         findPhase(buildNumber, phaseName, phase -> {
             task.setPhase(phase);
             task.setState(new State());
@@ -82,7 +82,7 @@ public class TaskService extends BaseService {
      * @param task        The {@link org.spectingular.spock.domain.Task}.
      * @throws IllegalArgumentException
      */
-    public void registerTask(final int buildNumber, final String moduleName, final String phaseName, final Task task) throws IllegalArgumentException {
+    public void register(final int buildNumber, final String moduleName, final String phaseName, final Task task) throws IllegalArgumentException {
         findPhase(buildNumber, moduleName, phaseName, phase -> {
             task.setPhase(phase);
             task.setState(new State());
@@ -99,7 +99,7 @@ public class TaskService extends BaseService {
      * @param state       The {@link org.spectingular.spock.domain.State}.
      * @throws IllegalArgumentException
      */
-    public void updateTask(final int buildNumber, final String phaseName, final String taskName, final State state) throws IllegalArgumentException {
+    public void update(final int buildNumber, final String phaseName, final String taskName, final State state) throws IllegalArgumentException {
         findByBuildNumberAndPhaseNameAndName(buildNumber, phaseName, taskName).map(o -> {
             final Task found = o;
             found.getState().setStopDate(new Date());
@@ -119,7 +119,7 @@ public class TaskService extends BaseService {
      * @param state       The {@link org.spectingular.spock.domain.State}.
      * @throws IllegalArgumentException
      */
-    public void updateTask(final int buildNumber, final String moduleName, final String phaseName, final String taskName, final State state) throws IllegalArgumentException {
+    public void update(final int buildNumber, final String moduleName, final String phaseName, final String taskName, final State state) throws IllegalArgumentException {
         findByBuildNumberAndModuleNameAndPhaseNameAndName(buildNumber, moduleName, phaseName, taskName).map(o -> {
             final Task found = o;
             found.getState().setStopDate(new Date());
