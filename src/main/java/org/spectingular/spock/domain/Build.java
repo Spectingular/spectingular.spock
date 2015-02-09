@@ -17,6 +17,7 @@ public class Build {
     @NotNull
     @Indexed(unique = true)
     private int number;
+    private State state;
 
     /**
      * Gets the number.
@@ -33,4 +34,21 @@ public class Build {
     public void setNumber(final int number) {
         this.number = number;
     }
+
+    /**
+     * Gets the state.
+     * @return state The state.
+     */
+    public State getState() {
+        return state;
+    }
+
+    /**
+     * Sets the state.
+     * @param state The state.
+     */
+    public void setState(final State state) {
+        this.state = state;
+    }
+
 }

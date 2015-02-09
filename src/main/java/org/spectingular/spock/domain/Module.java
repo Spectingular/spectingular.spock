@@ -62,7 +62,6 @@ public class Module {
         this.state = state;
     }
 
-
     /**
      * Gets the build.
      * @return build The {@link Build}.
