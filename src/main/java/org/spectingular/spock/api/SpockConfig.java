@@ -13,31 +13,28 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Order(1)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SpockConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(final WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/**");   // TODO [CQ] re-enable authentication!
+        web.ignoring().antMatchers("/**");
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests().anyRequest().authenticated();
-        http
-                .formLogin()
-                .defaultSuccessUrl("/")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll();
+        http.authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers("/builds/**").hasRole("USER");
+        http.httpBasic().realmName("Spock");
     }
 
     @Override
     protected void configure(final AuthenticationManagerBuilder builder) throws Exception {
         builder
                 .inMemoryAuthentication()
-                .withUser("user")
-                .password("password")
+                .withUser("spock")
+                .password("vulcan")
                 .roles("USER");
     }
 }
