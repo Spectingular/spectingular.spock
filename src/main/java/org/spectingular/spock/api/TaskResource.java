@@ -27,7 +27,6 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Component
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/builds/{buildNumber}")
 public class TaskResource {
     private static final Logger LOG = getLogger(TaskResource.class);
     @Resource
@@ -40,7 +39,7 @@ public class TaskResource {
      * @return response The response.
      */
     @GET
-    @Path("/phases/{phaseName}/tasks")
+    @Path("/builds/{buildNumber}/phases/{phaseName}/tasks")
     public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
@@ -61,7 +60,7 @@ public class TaskResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/phases/{phaseName}/tasks")
+    @Path("/builds/{buildNumber}/phases/{phaseName}/tasks")
     @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
         Response response;
@@ -85,7 +84,7 @@ public class TaskResource {
      * @return response The response.
      */
     @GET
-    @Path("/phases/{phaseName}/tasks/{taskName}")
+    @Path("/builds/{buildNumber}/phases/{phaseName}/tasks/{taskName}")
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName) {
         Response response;
         try {
@@ -111,7 +110,7 @@ public class TaskResource {
      * @return response The response.
      */
     @PUT
-    @Path("/phases/{phaseName}/tasks/{taskName}")
+    @Path("/builds/{buildNumber}/phases/{phaseName}/tasks/{taskName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName, final @Valid State state) {
         Response response;
@@ -133,7 +132,7 @@ public class TaskResource {
      * @return response The response.
      */
     @GET
-    @Path("/modules/{moduleName}/phases/{phaseName}/tasks")
+    @Path("/builds/{buildNumber}/modules/{moduleName}/phases/{phaseName}/tasks")
     public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
@@ -155,7 +154,7 @@ public class TaskResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/modules/{moduleName}/phases/{phaseName}/tasks")
+    @Path("/builds/{buildNumber}/modules/{moduleName}/phases/{phaseName}/tasks")
     @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
         Response response;
@@ -180,7 +179,7 @@ public class TaskResource {
      * @return response The response.
      */
     @GET
-    @Path("/modules/{moduleName}/phases/{phaseName}/tasks/{taskName}")
+    @Path("/builds/{buildNumber}/modules/{moduleName}/phases/{phaseName}/tasks/{taskName}")
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName) {
         Response response;
         try {
@@ -207,7 +206,7 @@ public class TaskResource {
      * @return response The response.
      */
     @PUT
-    @Path("/modules/{moduleName}/phases/{phaseName}/tasks/{taskName}")
+    @Path("/builds/{buildNumber}/modules/{moduleName}/phases/{phaseName}/tasks/{taskName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @PathParam("taskName") String taskName, final @Valid State state) {
         Response response;
