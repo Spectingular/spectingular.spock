@@ -26,6 +26,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Endpoint for exposing phases.
  */
 @Component
+@Path("/builds")
 @Produces(MediaType.APPLICATION_JSON)
 public class PhaseResource {
     private static final Logger LOG = getLogger(PhaseResource.class);
@@ -38,7 +39,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @GET
-    @Path("/builds/{buildNumber}/phases")
+    @Path("/{buildNumber}/phases")
     public Response all(final @PathParam("buildNumber") int buildNumber) {
         Response response;
         try {
@@ -59,7 +60,7 @@ public class PhaseResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/builds/{buildNumber}/phases")
+    @Path("/{buildNumber}/phases")
     @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Phase phase) {
         Response response;
@@ -82,7 +83,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @GET
-    @Path("/builds/{buildNumber}/phases/{phaseName}")
+    @Path("/{buildNumber}/phases/{phaseName}")
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
@@ -107,7 +108,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @PUT
-    @Path("/builds/{buildNumber}/phases/{phaseName}")
+    @Path("/{buildNumber}/phases/{phaseName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid State state) {
         Response response;
@@ -128,7 +129,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @GET
-    @Path("/builds/{buildNumber}/modules/{moduleName}/phases")
+    @Path("/{buildNumber}/modules/{moduleName}/phases")
     public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
         Response response;
         try {
@@ -149,7 +150,7 @@ public class PhaseResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/builds/{buildNumber}/modules/{moduleName}/phases")
+    @Path("/{buildNumber}/modules/{moduleName}/phases")
     @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @Valid Phase phase) {
         Response response;
@@ -173,7 +174,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @GET
-    @Path("/builds/{buildNumber}/modules/{moduleName}/phases/{phaseName}")
+    @Path("/{buildNumber}/modules/{moduleName}/phases/{phaseName}")
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName) {
         Response response;
         try {
@@ -199,7 +200,7 @@ public class PhaseResource {
      * @return response The response.
      */
     @PUT
-    @Path("/builds/{buildNumber}/modules/{moduleName}/phases/{phaseName}")
+    @Path("/{buildNumber}/modules/{moduleName}/phases/{phaseName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @Valid State state) {
         Response response;

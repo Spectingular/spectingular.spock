@@ -27,6 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Component
 @Produces(MediaType.APPLICATION_JSON)
+@Path("/builds")
 public class ModuleResource {
     private static final Logger LOG = getLogger(ModuleResource.class);
     @Resource
@@ -38,7 +39,7 @@ public class ModuleResource {
      * @return response The response.
      */
     @GET
-    @Path("/builds/{buildNumber}/modules")
+    @Path("/{buildNumber}/modules")
     public Response all(final @PathParam("buildNumber") int buildNumber) {
         Response response;
         try {
@@ -58,7 +59,7 @@ public class ModuleResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/builds/{buildNumber}/modules")
+    @Path("/{buildNumber}/modules")
     @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Module module) {
         Response response;
@@ -81,7 +82,7 @@ public class ModuleResource {
      * @return response The response.
      */
     @GET
-    @Path("/builds/{buildNumber}/modules/{moduleName}")
+    @Path("/{buildNumber}/modules/{moduleName}")
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
         Response response;
         try {
@@ -106,7 +107,7 @@ public class ModuleResource {
      * @return response The response.
      */
     @PUT
-    @Path("/builds/{buildNumber}/modules/{moduleName}")
+    @Path("/{buildNumber}/modules/{moduleName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @Valid State state) {
         Response response;
