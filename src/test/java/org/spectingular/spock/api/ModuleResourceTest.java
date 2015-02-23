@@ -115,4 +115,10 @@ public class ModuleResourceTest {
         verify(service).update(eq(1), eq("module"), isA(State.class));
     }
 
+
+    @Test
+    public void shouldGetModuleBuilds() throws Exception {
+        resource.builds("module");
+        verify(service).findBuildsByModuleName(eq("module"));
+    }
 }

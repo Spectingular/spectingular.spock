@@ -27,7 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Component
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/builds")
+@Path("/api")
 public class ModuleResource {
     private static final Logger LOG = getLogger(ModuleResource.class);
     @Resource
@@ -39,7 +39,7 @@ public class ModuleResource {
      * @return response The response.
      */
     @GET
-    @Path("/{buildNumber}/modules")
+    @Path("/builds/{buildNumber}/modules")
     public Response all(final @PathParam("buildNumber") int buildNumber) {
         Response response;
         try {
@@ -59,7 +59,7 @@ public class ModuleResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/{buildNumber}/modules")
+    @Path("/builds/{buildNumber}/modules")
     @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Module module) {
         Response response;
@@ -82,7 +82,7 @@ public class ModuleResource {
      * @return response The response.
      */
     @GET
-    @Path("/{buildNumber}/modules/{moduleName}")
+    @Path("/builds/{buildNumber}/modules/{moduleName}")
     public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
         Response response;
         try {
@@ -107,7 +107,7 @@ public class ModuleResource {
      * @return response The response.
      */
     @PUT
-    @Path("/{buildNumber}/modules/{moduleName}")
+    @Path("/builds/{buildNumber}/modules/{moduleName}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @Valid State state) {
         Response response;
@@ -120,4 +120,17 @@ public class ModuleResource {
         }
         return response;
     }
+
+    /**
+     * Gets the {@link org.spectingular.spock.domain.Module} matching the given name for the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * @param moduleName   The module name.
+     * @return response The response.
+     */
+    @GET
+    @Path("/modules/{moduleName}")
+    public Response builds(final @PathParam("moduleName") String moduleName) {
+        LOG.debug(format("Get module with name [%s]", moduleName));
+        return ok(moduleService.findBuildsByModuleName(moduleName)).build();
+    }
+
 }

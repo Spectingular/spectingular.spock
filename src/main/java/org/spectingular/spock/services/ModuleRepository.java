@@ -28,6 +28,13 @@ public interface ModuleRepository extends Repository<Module, String> {
     List<Module> findByBuild(Build build);
 
     /**
+     * Gets the {@link org.spectingular.spock.domain.Module}s for the given name.
+     * @param name The name.
+     * @return modules The {@link org.spectingular.spock.domain.Module}s.
+     */
+    List<Module> findByName(String name);
+
+    /**
      * Persists the {@link org.spectingular.spock.domain.Module}.
      * @return module The {@link org.spectingular.spock.domain.Module}.
      */

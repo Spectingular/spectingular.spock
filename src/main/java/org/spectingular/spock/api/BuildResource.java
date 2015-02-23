@@ -27,7 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 @Component
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/builds")
+@Path("/api")
 public class BuildResource {
     private static final Logger LOG = getLogger(BuildResource.class);
     @Resource
@@ -38,6 +38,7 @@ public class BuildResource {
      * @return response The response.
      */
     @GET
+    @Path("/builds")
     public Response builds() {
         LOG.debug("Get all builds");
         return ok(buildService.findAll()).build();
@@ -49,6 +50,7 @@ public class BuildResource {
      * @return response The response.
      */
     @POST
+    @Path("/builds")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response start(final @Valid Build build) {
         Response response;
@@ -68,19 +70,15 @@ public class BuildResource {
      * @return response The response.
      */
     @GET
-    @Path("/{buildNumber}")
+    @Path("/builds/{buildNumber}")
     public Response get(final @PathParam("buildNumber") int buildNumber) {
         Response response;
-        try {
-            LOG.debug(format("Get build with number [%d]", buildNumber));
-            final Optional<Build> ob = buildService.findByNumber(buildNumber);
-            if (ob.isPresent()) {
-                response = ok(ob.get()).build();
-            } else {
-                response = status(CONFLICT).entity(new Error("Build with number [%d] cannot be found", buildNumber)).build();
-            }
-        } catch (IllegalArgumentException e) {
-            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        LOG.debug(format("Get build with number [%d]", buildNumber));
+        final Optional<Build> ob = buildService.findByNumber(buildNumber);
+        if (ob.isPresent()) {
+            response = ok(ob.get()).build();
+        } else {
+            response = status(CONFLICT).entity(new Error("Build with number [%d] cannot be found", buildNumber)).build();
         }
         return response;
     }
@@ -92,7 +90,7 @@ public class BuildResource {
      * @return response The response.
      */
     @PUT
-    @Path("/{buildNumber}")
+    @Path("/builds/{buildNumber}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response finish(final @PathParam("buildNumber") int buildNumber, final @Valid State state) {
         Response response;

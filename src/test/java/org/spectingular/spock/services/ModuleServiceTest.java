@@ -181,4 +181,12 @@ public class ModuleServiceTest {
         }
         verify(buildRepository).findByNumber(eq(1));
     }
+
+    @Test
+    public void shouldFindBuilds() throws Exception {
+        when(moduleRepository.findByName(eq("module"))).thenReturn(new ArrayList<Module>());
+        assertEquals(0, service.findBuildsByModuleName("module").size());
+        verify(moduleRepository).findByName(eq("module"));
+    }
+
 }

@@ -1,5 +1,6 @@
 package org.spectingular.spock.services;
 
+import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Module;
 import org.spectingular.spock.domain.State;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -19,7 +21,7 @@ public class ModuleService extends BaseService {
     /**
      * Gets all the {@link org.spectingular.spock.domain.Module}s for the {@link org.spectingular.spock.domain.Build} matching the given build number.
      * @param buildNumber The build number.
-     * @return phases The {@link org.spectingular.spock.domain.Phase}s.
+     * @return modules The {@link org.spectingular.spock.domain.Module}s.
      */
     public List<Module> findByBuildNumber(final int buildNumber) throws IllegalArgumentException {
         return findBuild(buildNumber, build -> moduleRepository.findByBuild(build));
@@ -68,5 +70,14 @@ public class ModuleService extends BaseService {
                     return found;
                 }).
                 orElseThrow(() -> new IllegalArgumentException(format("Module with name [%s] for build with number [%d] cannot be found", moduleName, buildNumber)));
+    }
+
+    /**
+     * Gets all the {@link org.spectingular.spock.domain.Build}s for the {@link org.spectingular.spock.domain.Module} matching the given name.
+     * @param moduleName The name.
+     * @return builds The {@link org.spectingular.spock.domain.Build}s.
+     */
+    public List<Build> findBuildsByModuleName(final String moduleName) throws IllegalArgumentException {
+        return moduleRepository.findByName(moduleName).stream().map(module -> module.getBuild()).collect(Collectors.toList());
     }
 }
