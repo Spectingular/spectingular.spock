@@ -6,10 +6,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.spectingular.spock.api.dto.TaskDto;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Phase;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.domain.Task;
+import org.spectingular.spock.services.ReportService;
 import org.spectingular.spock.services.TaskService;
 import org.springframework.dao.DuplicateKeyException;
 
@@ -33,10 +35,14 @@ public class TaskResourceTest {
     private TaskResource resource;
 
     @Mock
-    private TaskService service;
-    private Optional<Task> optional;
+    private TaskService taskService;
+    @Mock
+    private ReportService reportService;
+    private Optional<TaskDto> optional;
     @Mock
     private Task task;
+    @Mock
+    private TaskDto taskDto;
     @Mock
     private Phase phase;
     @Mock
@@ -49,145 +55,145 @@ public class TaskResourceTest {
 
     @Test
     public void shouldGetTasksForBuild() throws Exception {
-        when(service.findByBuildNumberAndPhaseName(eq(1), eq("phase"))).thenReturn(new ArrayList<Task>());
-        assertEquals(0, ((List<Task>) resource.all(1, "phase").getEntity()).size());
+        when(reportService.findTasksByBuildNumberAndPhaseName(eq(1), eq("phase"))).thenReturn(new ArrayList<TaskDto>());
+        assertEquals(0, ((List<TaskDto>) resource.all(1, "phase").getEntity()).size());
     }
 
     @Test
     public void shouldNotGetTasksForBuildWhenTheBuildAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndPhaseName(eq(1), eq("phase"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findTasksByBuildNumberAndPhaseName(eq(1), eq("phase"));
         final Response response = resource.all(1, "phase");
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).findByBuildNumberAndPhaseName(eq(1), eq("phase"));
+        verify(reportService).findTasksByBuildNumberAndPhaseName(eq(1), eq("phase"));
     }
 
     @Test
     public void shouldStartTaskForBuild() throws Exception {
         resource.start(1, "phase", task);
-        verify(service).register(eq(1), eq("phase"), isA(Task.class));
+        verify(taskService).register(eq(1), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldFailStartingTaskForBuildWhenTheBuildAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).register(eq(1), eq("phase"), isA(Task.class));
+        doThrow(new IllegalArgumentException("error")).when(taskService).register(eq(1), eq("phase"), isA(Task.class));
         final Response response = resource.start(1, "phase", task);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).register(eq(1), eq("phase"), isA(Task.class));
+        verify(taskService).register(eq(1), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldFailStartingTaskForBuildWhenTheTaskAlreadyExists() throws Exception {
-        doThrow(DuplicateKeyException.class).when(service).register(eq(1), eq("phase"), isA(Task.class));
+        doThrow(DuplicateKeyException.class).when(taskService).register(eq(1), eq("phase"), isA(Task.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, "phase", task).getStatus());
-        verify(service).register(eq(1), eq("phase"), isA(Task.class));
+        verify(taskService).register(eq(1), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldGetTaskForBuild() throws Exception {
-        optional = of(task);
-        when(service.findByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
-        assertEquals(task, resource.get(1, "phase", "task").getEntity());
+        optional = of(taskDto);
+        when(reportService.findTasksByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
+        assertEquals(taskDto, resource.get(1, "phase", "task").getEntity());
     }
 
     @Test
     public void shouldNotGetTaskForBuildWhenBuildAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findTasksByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"));
         assertEquals("error", ((Error) resource.get(1, "phase", "task").getEntity()).getMessage());
     }
 
     @Test
     public void shouldNotGetTaskForBuildWhenTaskDoesNotExist() throws Exception {
         optional = empty();
-        when(service.findByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
+        when(reportService.findTasksByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
         assertEquals("Task with name [task] for phase with name [phase] and build with number [1] cannot be found", ((Error) resource.get(1, "phase", "task").getEntity()).getMessage());
     }
 
     @Test
     public void shouldFinishTaskForBuild() throws Exception {
         resource.finish(1, "phase", "task", state);
-        verify(service).update(eq(1), eq("phase"), eq("task"), isA(State.class));
+        verify(taskService).update(eq(1), eq("phase"), eq("task"), isA(State.class));
     }
 
     @Test
     public void shouldFailFinishingPhaseForBuildWhenTheBuildAndOrPhaseHaveNotBeenRegistered() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).update(eq(1), eq("phase"), eq("task"), isA(State.class));
+        doThrow(new IllegalArgumentException("error")).when(taskService).update(eq(1), eq("phase"), eq("task"), isA(State.class));
         final Response response = resource.finish(1, "phase", "task", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).update(eq(1), eq("phase"), eq("task"), isA(State.class));
+        verify(taskService).update(eq(1), eq("phase"), eq("task"), isA(State.class));
     }
 
     @Test
     public void shouldGetTasksForModule() throws Exception {
-        when(service.findByBuildNumberAndModuleNameAndPhaseName(eq(1), eq("module"), eq("phase"))).thenReturn(new ArrayList<Task>());
-        assertEquals(0, ((List<Task>) resource.all(1, "module", "phase").getEntity()).size());
+        when(reportService.findTasksByBuildNumberAndModuleNameAndPhaseName(eq(1), eq("module"), eq("phase"))).thenReturn(new ArrayList<TaskDto>());
+        assertEquals(0, ((List<TaskDto>) resource.all(1, "module", "phase").getEntity()).size());
     }
 
     @Test
     public void shouldNotGetTasksForModuleWhenTheBuildAndOrModuleAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndModuleNameAndPhaseName(eq(1), eq("module"), eq("phase"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findTasksByBuildNumberAndModuleNameAndPhaseName(eq(1), eq("module"), eq("phase"));
         final Response response = resource.all(1, "module", "phase");
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).findByBuildNumberAndModuleNameAndPhaseName(eq(1), eq("module"), eq("phase"));
+        verify(reportService).findTasksByBuildNumberAndModuleNameAndPhaseName(eq(1), eq("module"), eq("phase"));
     }
 
     @Test
     public void shouldStartTaskForModule() throws Exception {
         resource.start(1, "module", "phase", task);
-        verify(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        verify(taskService).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldFailStartingTaskForModuleWhenTheBuildAndOrModuleAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        doThrow(new IllegalArgumentException("error")).when(taskService).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
         final Response response = resource.start(1, "module", "phase", task);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        verify(taskService).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldFailStartingTaskForModuleWhenTheTaskAlreadyExists() throws Exception {
-        doThrow(DuplicateKeyException.class).when(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        doThrow(DuplicateKeyException.class).when(taskService).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, "module", "phase", task).getStatus());
-        verify(service).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
+        verify(taskService).register(eq(1), eq("module"), eq("phase"), isA(Task.class));
     }
 
     @Test
     public void shouldGetTaskForModule() throws Exception {
-        optional = of(task);
-        when(service.findByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"))).thenReturn(optional);
-        assertEquals(task, resource.get(1, "module", "phase", "task").getEntity());
+        optional = of(taskDto);
+        when(reportService.findTasksByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"))).thenReturn(optional);
+        assertEquals(taskDto, resource.get(1, "module", "phase", "task").getEntity());
     }
 
     @Test
     public void shouldNotGetTaskForModuleWhenBuildAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findTasksByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"));
         assertEquals("error", ((Error) resource.get(1, "module", "phase", "task").getEntity()).getMessage());
     }
 
     @Test
     public void shouldNotGetTaskForModuleWhenTaskDoesNotExist() throws Exception {
         optional = empty();
-        when(service.findByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"))).thenReturn(optional);
+        when(reportService.findTasksByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"))).thenReturn(optional);
         assertEquals("Task with name [task] for phase with name [module] and module with name [phase] and build with number [1] cannot be found", ((Error) resource.get(1, "module", "phase", "task").getEntity()).getMessage());
     }
 
     @Test
     public void shouldFinishTaskForModule() throws Exception {
         resource.finish(1, "module", "phase", "task", state);
-        verify(service).update(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
+        verify(taskService).update(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
     }
 
     @Test
     public void shouldFailFinishingPhaseForModuleWhenTheBuildAndOrModuleAndOrPhaseHaveNotBeenRegistered() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).update(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
+        doThrow(new IllegalArgumentException("error")).when(taskService).update(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
         final Response response = resource.finish(1, "module", "phase", "task", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).update(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
+        verify(taskService).update(eq(1), eq("module"), eq("phase"), eq("task"), isA(State.class));
     }
 }

@@ -1,10 +1,13 @@
 package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
+import org.spectingular.spock.api.dto.ModuleDto;
+import org.spectingular.spock.api.dto.PhaseDto;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Phase;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.services.PhaseService;
+import org.spectingular.spock.services.ReportService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,8 @@ public class PhaseResource {
     private static final Logger LOG = getLogger(PhaseResource.class);
     @Resource
     private PhaseService phaseService;
+    @Resource
+    private ReportService reportService;
 
     /**
      * Gets all the {@link org.spectingular.spock.domain.Phase}s that are registered for the {@link org.spectingular.spock.domain.Build} matching the given build number.
@@ -44,7 +49,75 @@ public class PhaseResource {
         Response response;
         try {
             LOG.debug(format("Get all phases for build with number [%d]", buildNumber));
-            response = ok(phaseService.findByBuildNumber(buildNumber)).build();
+            response = ok(reportService.findPhasesByBuildNumber(buildNumber)).build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Gets the {@link org.spectingular.spock.domain.Phase} matching the given name for the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * @param buildNumber The build number.
+     * @param phaseName   The phase name.
+     * @return response The response.
+     */
+    @GET
+    @Path("/builds/{buildNumber}/phases/{phaseName}")
+    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
+        Response response;
+        try {
+            LOG.debug(format("Get phase with name [%s] for build with number [%d]", phaseName, buildNumber));
+            final Optional<PhaseDto> op = reportService.findPhasesByBuildNumberAndName(buildNumber, phaseName);
+            if (op.isPresent()) {
+                response = ok(op.get()).build();
+            } else {
+                response = status(CONFLICT).entity(new Error("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber)).build();
+            }
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Gets all the {@link org.spectingular.spock.domain.Phase}s that are registered for the {@link org.spectingular.spock.domain.Module} matching the given build number.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @return response The response.
+     */
+    @GET
+    @Path("/builds/{buildNumber}/modules/{moduleName}/phases")
+    public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
+        Response response;
+        try {
+            LOG.debug(format("Get all phases for build with number [%d] and module with name [%s]", buildNumber, moduleName));
+            response = ok(reportService.findPhasesByBuildNumberAndModuleName(buildNumber, moduleName)).build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Gets the {@link org.spectingular.spock.domain.Phase} matching the given name for the {@link org.spectingular.spock.domain.Module} matching the given build number.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @return response The response.
+     */
+    @GET
+    @Path("/builds/{buildNumber}/modules/{moduleName}/phases/{phaseName}")
+    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName) {
+        Response response;
+        try {
+            LOG.debug(format("Get phase with name [%s] for build with number [%d] and module with name [%s]", phaseName, buildNumber, moduleName));
+            final Optional<PhaseDto> op = reportService.findPhasesByBuildNumberAndModuleNameAndName(buildNumber, moduleName, phaseName);
+            if (op.isPresent()) {
+                response = ok(op.get()).build();
+            } else {
+                response = status(CONFLICT).entity(new Error("Phase with name [%s] for module with name [%s] and build with number [%d] cannot be found", phaseName, moduleName, buildNumber)).build();
+            }
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
@@ -76,29 +149,6 @@ public class PhaseResource {
         return response;
     }
 
-    /**
-     * Gets the {@link org.spectingular.spock.domain.Phase} matching the given name for the {@link org.spectingular.spock.domain.Build} matching the given build number.
-     * @param buildNumber The build number.
-     * @param phaseName   The phase name.
-     * @return response The response.
-     */
-    @GET
-    @Path("/builds/{buildNumber}/phases/{phaseName}")
-    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName) {
-        Response response;
-        try {
-            LOG.debug(format("Get phase with name [%s] for build with number [%d]", phaseName, buildNumber));
-            final Optional<Phase> op = phaseService.findByBuildNumberAndName(buildNumber, phaseName);
-            if (op.isPresent()) {
-                response = ok(op.get()).build();
-            } else {
-                response = status(CONFLICT).entity(new Error("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber)).build();
-            }
-        } catch (IllegalArgumentException e) {
-            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
-        }
-        return response;
-    }
 
     /**
      * Updates the {@link org.spectingular.spock.domain.Phase} for the {@link org.spectingular.spock.domain.Build} matching the given parameters
@@ -122,24 +172,6 @@ public class PhaseResource {
         return response;
     }
 
-    /**
-     * Gets all the {@link org.spectingular.spock.domain.Phase}s that are registered for the {@link org.spectingular.spock.domain.Module} matching the given build number.
-     * @param buildNumber The build number.
-     * @param moduleName  The module name.
-     * @return response The response.
-     */
-    @GET
-    @Path("/builds/{buildNumber}/modules/{moduleName}/phases")
-    public Response all(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
-        Response response;
-        try {
-            LOG.debug(format("Get all phases for build with number [%d] and module with name [%s]", buildNumber, moduleName));
-            response = ok(phaseService.findByBuildNumberAndModuleName(buildNumber, moduleName)).build();
-        } catch (IllegalArgumentException e) {
-            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
-        }
-        return response;
-    }
 
     /**
      * Creates a {@link org.spectingular.spock.domain.Phase} for the {@link org.spectingular.spock.domain.Module} matching the given build number.
@@ -166,30 +198,6 @@ public class PhaseResource {
         return response;
     }
 
-    /**
-     * Gets the {@link org.spectingular.spock.domain.Phase} matching the given name for the {@link org.spectingular.spock.domain.Module} matching the given build number.
-     * @param buildNumber The build number.
-     * @param moduleName  The module name.
-     * @param phaseName   The phase name.
-     * @return response The response.
-     */
-    @GET
-    @Path("/builds/{buildNumber}/modules/{moduleName}/phases/{phaseName}")
-    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName) {
-        Response response;
-        try {
-            LOG.debug(format("Get phase with name [%s] for build with number [%d] and module with name [%s]", phaseName, buildNumber, moduleName));
-            final Optional<Phase> op = phaseService.findByBuildNumberAndModuleNameAndName(buildNumber, moduleName, phaseName);
-            if (op.isPresent()) {
-                response = ok(op.get()).build();
-            } else {
-                response = status(CONFLICT).entity(new Error("Phase with name [%s] for module with name [%s] and build with number [%d] cannot be found", phaseName, moduleName, buildNumber)).build();
-            }
-        } catch (IllegalArgumentException e) {
-            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
-        }
-        return response;
-    }
 
     /**
      * Updates the {@link org.spectingular.spock.domain.Phase} for the {@link org.spectingular.spock.domain.Module} matching the given parameters

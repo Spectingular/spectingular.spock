@@ -1,10 +1,13 @@
 package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
+import org.spectingular.spock.api.dto.BuildDto;
+import org.spectingular.spock.api.dto.PhaseDto;
+import org.spectingular.spock.api.dto.TaskDto;
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.State;
-import org.spectingular.spock.services.BuildService;
+import org.spectingular.spock.services.*;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
@@ -32,6 +36,8 @@ public class BuildResource {
     private static final Logger LOG = getLogger(BuildResource.class);
     @Resource
     private BuildService buildService;
+    @Resource
+    private ReportService reportService;
 
     /**
      * Gets all the {@link org.spectingular.spock.domain.Build}s.
@@ -41,7 +47,26 @@ public class BuildResource {
     @Path("/builds")
     public Response builds() {
         LOG.debug("Get all builds");
-        return ok(buildService.findAll()).build();
+        return ok(reportService.findBuilds()).build();
+    }
+
+    /**
+     * Gets the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * @param buildNumber The build number.
+     * @return response The response.
+     */
+    @GET
+    @Path("/builds/{buildNumber}")
+    public Response get(final @PathParam("buildNumber") int buildNumber) {
+        Response response;
+        LOG.debug(format("Get build with number [%d]", buildNumber));
+        final Optional<BuildDto> ob = reportService.findBuild(buildNumber);
+        if (ob.isPresent()) {
+            response = ok(ob.get()).build();
+        } else {
+            response = status(CONFLICT).entity(new Error("Build with number [%d] cannot be found", buildNumber)).build();
+        }
+        return response;
     }
 
     /**
@@ -60,25 +85,6 @@ public class BuildResource {
             response = ok().build();
         } catch (DuplicateKeyException e) {
             response = status(CONFLICT).entity(new Error("Build with number [%d] has already been registered ", build.getNumber())).build();
-        }
-        return response;
-    }
-
-    /**
-     * Gets the {@link org.spectingular.spock.domain.Build} matching the given build number.
-     * @param buildNumber The build number.
-     * @return response The response.
-     */
-    @GET
-    @Path("/builds/{buildNumber}")
-    public Response get(final @PathParam("buildNumber") int buildNumber) {
-        Response response;
-        LOG.debug(format("Get build with number [%d]", buildNumber));
-        final Optional<Build> ob = buildService.findByNumber(buildNumber);
-        if (ob.isPresent()) {
-            response = ok(ob.get()).build();
-        } else {
-            response = status(CONFLICT).entity(new Error("Build with number [%d] cannot be found", buildNumber)).build();
         }
         return response;
     }

@@ -20,7 +20,7 @@ public class TaskService extends BaseService {
      * Gets all the {@link org.spectingular.spock.domain.Task}s for the {@link org.spectingular.spock.domain.Phase} matching the given parameters.
      * @param buildNumber The build number.
      * @param phaseName   The phase name.
-     * @return phases The {@link org.spectingular.spock.domain.Phase}s.
+     * @return tasks The {@link org.spectingular.spock.domain.Task}s.
      */
     public List<Task> findByBuildNumberAndPhaseName(final int buildNumber, final String phaseName) throws IllegalArgumentException {
         return findPhase(buildNumber, phaseName, phase -> taskRepository.findByPhase(phase));
@@ -31,7 +31,7 @@ public class TaskService extends BaseService {
      * @param buildNumber The build number.
      * @param moduleName  The module name.
      * @param phaseName   The phase name.
-     * @return phases The {@link org.spectingular.spock.domain.Phase}s.
+     * @return tasks The {@link org.spectingular.spock.domain.Task}s.
      */
     public List<Task> findByBuildNumberAndModuleNameAndPhaseName(final int buildNumber, final String moduleName, final String phaseName) throws IllegalArgumentException {
         return findPhase(buildNumber, moduleName, phaseName, phase -> taskRepository.findByPhase(phase));
@@ -41,7 +41,7 @@ public class TaskService extends BaseService {
      * Gets the {@link org.spectingular.spock.domain.Task} for the {@link org.spectingular.spock.domain.Phase} matching the given parameters.
      * @param buildNumber The build number.
      * @param phaseName   The phase name.
-     * @return phase The {@link org.spectingular.spock.domain.Phase}
+     * @return task The {@link org.spectingular.spock.domain.Task}
      */
     public Optional<Task> findByBuildNumberAndPhaseNameAndName(final int buildNumber, final String phaseName, final String taskName) throws IllegalArgumentException {
         return findPhase(buildNumber, phaseName, phase -> taskRepository.findByPhaseAndName(phase, taskName));
@@ -52,7 +52,7 @@ public class TaskService extends BaseService {
      * @param buildNumber The build number.
      * @param moduleName  The module name.
      * @param phaseName   The phase name.
-     * @return phase The {@link org.spectingular.spock.domain.Phase}
+     * @return task The {@link org.spectingular.spock.domain.Task}
      */
     public Optional<Task> findByBuildNumberAndModuleNameAndPhaseNameAndName(final int buildNumber, final String moduleName, final String phaseName, final String taskName) throws IllegalArgumentException {
         return findPhase(buildNumber, moduleName, phaseName, phase -> taskRepository.findByPhaseAndName(phase, taskName));

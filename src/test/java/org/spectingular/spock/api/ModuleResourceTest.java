@@ -6,10 +6,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.spectingular.spock.api.dto.ModuleDto;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Module;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.services.ModuleService;
+import org.spectingular.spock.services.ReportService;
 import org.springframework.dao.DuplicateKeyException;
 
 import javax.ws.rs.core.Response;
@@ -31,10 +33,14 @@ public class ModuleResourceTest {
     private ModuleResource resource;
 
     @Mock
-    private ModuleService service;
-    private Optional<Module> optional;
+    private ModuleService moduleService;
+    @Mock
+    private ReportService reportService;
+    private Optional<ModuleDto> optional;
     @Mock
     private Module module;
+    @Mock
+    private ModuleDto moduleDto;
     @Mock
     private State state;
 
@@ -45,80 +51,80 @@ public class ModuleResourceTest {
 
     @Test
     public void shouldGetModules() throws Exception {
-        when(service.findByBuildNumber(eq(1))).thenReturn(new ArrayList<Module>());
-        assertEquals(0, ((List<Module>) resource.all(1).getEntity()).size());
+        when(reportService.findModulesByBuildNumber(eq(1))).thenReturn(new ArrayList<ModuleDto>());
+        assertEquals(0, ((List<ModuleDto>) resource.all(1).getEntity()).size());
     }
 
     @Test
     public void shouldNotGetModulesWhenTheBuildDoesNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumber(eq(1));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findModulesByBuildNumber(eq(1));
         final Response response = resource.all(1);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).findByBuildNumber(eq(1));
+        verify(reportService).findModulesByBuildNumber(eq(1));
     }
 
     @Test
     public void shouldStartModule() throws Exception {
         assertEquals(OK.getStatusCode(), resource.start(1, module).getStatus());
-        verify(service).register(eq(1), isA(Module.class));
+        verify(moduleService).register(eq(1), isA(Module.class));
     }
 
     @Test
     public void shouldFailStartingModuleWhenTheBuildDoesNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).register(eq(1), isA(Module.class));
+        doThrow(new IllegalArgumentException("error")).when(moduleService).register(eq(1), isA(Module.class));
         final Response response = resource.start(1, module);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).register(eq(1), isA(Module.class));
+        verify(moduleService).register(eq(1), isA(Module.class));
     }
 
     @Test
     public void shouldFailStartingModuleWhenTheModuleAlreadyExists() throws Exception {
-        doThrow(DuplicateKeyException.class).when(service).register(eq(1), isA(Module.class));
+        doThrow(DuplicateKeyException.class).when(moduleService).register(eq(1), isA(Module.class));
         assertEquals(CONFLICT.getStatusCode(), resource.start(1, module).getStatus());
-        verify(service).register(eq(1), isA(Module.class));
+        verify(moduleService).register(eq(1), isA(Module.class));
     }
 
     @Test
     public void shouldGetModule() throws Exception {
-        optional = Optional.of(module);
-        when(service.findByBuildNumberAndName(eq(1), eq("module"))).thenReturn(optional);
-        assertEquals(module, resource.get(1, "module").getEntity());
+        optional = Optional.of(moduleDto);
+        when(reportService.findModulesByBuildNumberAndName(eq(1), eq("module"))).thenReturn(optional);
+        assertEquals(moduleDto, resource.get(1, "module").getEntity());
     }
 
     @Test
     public void shouldNotGetModuleWhenBuildDoesNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).findByBuildNumberAndName(eq(1), eq("module"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findModulesByBuildNumberAndName(eq(1), eq("module"));
         assertEquals("error", ((Error) resource.get(1, "module").getEntity()).getMessage());
     }
 
     @Test
     public void shouldNotGetModuleWhenModuleDoesNotExist() throws Exception {
         optional = Optional.empty();
-        when(service.findByBuildNumberAndName(eq(1), eq("module"))).thenReturn(optional);
+        when(reportService.findModulesByBuildNumberAndName(eq(1), eq("module"))).thenReturn(optional);
         assertEquals("Module with name [module] for build with number [1] cannot be found", ((Error) resource.get(1, "module").getEntity()).getMessage());
     }
 
     @Test
     public void shouldFinishModule() throws Exception {
         resource.finish(1, "module", state);
-        verify(service).update(eq(1), eq("module"), isA(State.class));
+        verify(moduleService).update(eq(1), eq("module"), isA(State.class));
     }
 
     @Test
     public void shouldFailFinishingModuleWhenTheBuildAndOrModuleDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(service).update(eq(1), eq("module"), isA(State.class));
+        doThrow(new IllegalArgumentException("error")).when(moduleService).update(eq(1), eq("module"), isA(State.class));
         final Response response = resource.finish(1, "module", state);
         assertEquals(CONFLICT.getStatusCode(), response.getStatus());
         assertEquals("error", ((Error) response.getEntity()).getMessage());
-        verify(service).update(eq(1), eq("module"), isA(State.class));
+        verify(moduleService).update(eq(1), eq("module"), isA(State.class));
     }
 
 
     @Test
     public void shouldGetModuleBuilds() throws Exception {
         resource.builds("module");
-        verify(service).findBuildsByModuleName(eq("module"));
+        verify(moduleService).findBuildsByModuleName(eq("module"));
     }
 }

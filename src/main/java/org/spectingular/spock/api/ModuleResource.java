@@ -1,10 +1,13 @@
 package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
+import org.spectingular.spock.api.dto.BuildDto;
+import org.spectingular.spock.api.dto.ModuleDto;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Module;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.services.ModuleService;
+import org.spectingular.spock.services.ReportService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,8 @@ public class ModuleResource {
     private static final Logger LOG = getLogger(ModuleResource.class);
     @Resource
     private ModuleService moduleService;
+    @Resource
+    private ReportService reportService;
 
     /**
      * Gets all the {@link org.spectingular.spock.domain.Module}s that are registered for the {@link org.spectingular.spock.domain.Build} matching the given build number.
@@ -44,7 +49,31 @@ public class ModuleResource {
         Response response;
         try {
             LOG.debug(format("Get all modules for build with number [%d]", buildNumber));
-            response = ok(moduleService.findByBuildNumber(buildNumber)).build();
+            response = ok(reportService.findModulesByBuildNumber(buildNumber)).build();
+        } catch (IllegalArgumentException e) {
+            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
+        }
+        return response;
+    }
+
+    /**
+     * Gets the {@link org.spectingular.spock.domain.Module} matching the given name for the {@link org.spectingular.spock.domain.Build} matching the given build number.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @return response The response.
+     */
+    @GET
+    @Path("/builds/{buildNumber}/modules/{moduleName}")
+    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
+        Response response;
+        try {
+            LOG.debug(format("Get module with name [%s] for build with number [%d]", moduleName, buildNumber));
+            final Optional<ModuleDto> om = reportService.findModulesByBuildNumberAndName(buildNumber, moduleName);
+            if (om.isPresent()) {
+                response = ok(om.get()).build();
+            } else {
+                response = status(CONFLICT).entity(new Error("Module with name [%s] for build with number [%d] cannot be found", moduleName, buildNumber)).build();
+            }
         } catch (IllegalArgumentException e) {
             response = status(CONFLICT).entity(new Error(e.getMessage())).build();
         }
@@ -54,7 +83,7 @@ public class ModuleResource {
     /**
      * Creates a {@link org.spectingular.spock.domain.Module} for the {@link org.spectingular.spock.domain.Build} matching the given build number.
      * @param buildNumber The build number.
-     * @param module       The {@link org.spectingular.spock.domain.Module}.
+     * @param module      The {@link org.spectingular.spock.domain.Module}.
      * @return response The response.
      */
     @POST
@@ -76,33 +105,9 @@ public class ModuleResource {
     }
 
     /**
-     * Gets the {@link org.spectingular.spock.domain.Module} matching the given name for the {@link org.spectingular.spock.domain.Build} matching the given build number.
-     * @param buildNumber The build number.
-     * @param moduleName   The module name.
-     * @return response The response.
-     */
-    @GET
-    @Path("/builds/{buildNumber}/modules/{moduleName}")
-    public Response get(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName) {
-        Response response;
-        try {
-            LOG.debug(format("Get module with name [%s] for build with number [%d]", moduleName, buildNumber));
-            final Optional<Module> op = moduleService.findByBuildNumberAndName(buildNumber, moduleName);
-            if (op.isPresent()) {
-                response = ok(op.get()).build();
-            } else {
-                response = status(CONFLICT).entity(new Error("Module with name [%s] for build with number [%d] cannot be found", moduleName, buildNumber)).build();
-            }
-        } catch (IllegalArgumentException e) {
-            response = status(CONFLICT).entity(new Error(e.getMessage())).build();
-        }
-        return response;
-    }
-
-    /**
      * Updates the {@link org.spectingular.spock.domain.Module} for the {@link org.spectingular.spock.domain.Build} matching the given parameters
      * @param buildNumber The build number.
-     * @param moduleName   The module name.
+     * @param moduleName  The module name.
      * @param state       The state.
      * @return response The response.
      */
@@ -123,7 +128,7 @@ public class ModuleResource {
 
     /**
      * Gets the {@link org.spectingular.spock.domain.Module} matching the given name for the {@link org.spectingular.spock.domain.Build} matching the given build number.
-     * @param moduleName   The module name.
+     * @param moduleName The module name.
      * @return response The response.
      */
     @GET
