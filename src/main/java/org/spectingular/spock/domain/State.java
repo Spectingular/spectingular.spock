@@ -1,8 +1,12 @@
 package org.spectingular.spock.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.spectingular.spock.api.dto.RunState;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+
+import static org.spectingular.spock.api.dto.RunState.*;
 
 /**
  * State represents the state of something.
@@ -59,5 +63,14 @@ public class State {
      */
     public void setSuccess(final boolean success) {
         this.success = success;
+    }
+
+    /**
+     * Gets the {@link org.spectingular.spock.api.dto.RunState}.
+     * @return runState The {@link org.spectingular.spock.api.dto.RunState}.
+     */
+    @JsonIgnore
+    public RunState getRunState() {
+        return stopDate != null ? (isSuccess() ? FINISHED_SUCCESSFULLY : FINISHED_WITH_FAILURES) : IN_PROGRESS;
     }
 }
