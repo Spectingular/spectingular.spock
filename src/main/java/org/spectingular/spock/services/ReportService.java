@@ -4,9 +4,6 @@ import org.spectingular.spock.api.dto.BuildDto;
 import org.spectingular.spock.api.dto.ModuleDto;
 import org.spectingular.spock.api.dto.PhaseDto;
 import org.spectingular.spock.api.dto.TaskDto;
-import org.spectingular.spock.domain.Module;
-import org.spectingular.spock.domain.Phase;
-import org.spectingular.spock.domain.Task;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -69,7 +66,7 @@ public class ReportService {
      * @param name        The name.
      * @return module The {@link org.spectingular.spock.api.dto.ModuleDto}
      */
-    public Optional<ModuleDto> findModulesByBuildNumberAndName(final int buildNumber, final String name) throws IllegalArgumentException {
+    public Optional<ModuleDto> findModuleByBuildNumberAndName(final int buildNumber, final String name) throws IllegalArgumentException {
         return moduleService.findByBuildNumberAndName(buildNumber, name).map(module -> {
             final ModuleDto dto = new ModuleDto(name, module.getState());
             dto.setPhases(findPhasesByBuildNumberAndModuleName(buildNumber, module.getName()));
@@ -96,7 +93,7 @@ public class ReportService {
      * @param name        The name.
      * @return phase The {@link org.spectingular.spock.api.dto.PhaseDto}
      */
-    public Optional<PhaseDto> findPhasesByBuildNumberAndName(final int buildNumber, final String name) throws IllegalArgumentException {
+    public Optional<PhaseDto> findPhaseByBuildNumberAndName(final int buildNumber, final String name) throws IllegalArgumentException {
         return phaseService.findByBuildNumberAndName(buildNumber, name).map(phase -> {
             final PhaseDto dto = new PhaseDto(name, phase.getState());
             dto.setTasks(findTasksByBuildNumberAndPhaseName(buildNumber, phase.getName()));
@@ -123,7 +120,7 @@ public class ReportService {
      * @param name        The name.
      * @return phase The {@link org.spectingular.spock.api.dto.PhaseDto}.
      */
-    public Optional<PhaseDto> findPhasesByBuildNumberAndModuleNameAndName(final int buildNumber, final String moduleName, final String name) throws IllegalArgumentException {
+    public Optional<PhaseDto> findPhaseByBuildNumberAndModuleNameAndName(final int buildNumber, final String moduleName, final String name) throws IllegalArgumentException {
         return phaseService.findByBuildNumberAndModuleNameAndName(buildNumber, moduleName, name).map(phase -> {
             final PhaseDto dto = new PhaseDto(phase.getName(), phase.getState());
             dto.setTasks(findTasksByBuildNumberAndModuleNameAndPhaseName(buildNumber, moduleName, phase.getName()));
@@ -147,7 +144,7 @@ public class ReportService {
      * @param phaseName   The phase name.
      * @return task The {@link org.spectingular.spock.api.dto.TaskDto}
      */
-    public Optional<TaskDto> findTasksByBuildNumberAndPhaseNameAndName(final int buildNumber, final String phaseName, final String taskName) throws IllegalArgumentException {
+    public Optional<TaskDto> findTaskByBuildNumberAndPhaseNameAndName(final int buildNumber, final String phaseName, final String taskName) throws IllegalArgumentException {
         return taskService.findByBuildNumberAndPhaseNameAndName(buildNumber, phaseName, taskName).map(task -> new TaskDto(taskName, task.getState()));
     }
 
@@ -169,7 +166,7 @@ public class ReportService {
      * @param phaseName   The phase name.
      * @return task The {@link org.spectingular.spock.api.dto.TaskDto}.
      */
-    public Optional<TaskDto> findTasksByBuildNumberAndModuleNameAndPhaseNameAndName(final int buildNumber, final String moduleName, final String phaseName, final String taskName) throws IllegalArgumentException {
+    public Optional<TaskDto> findTaskByBuildNumberAndModuleNameAndPhaseNameAndName(final int buildNumber, final String moduleName, final String phaseName, final String taskName) throws IllegalArgumentException {
         return taskService.findByBuildNumberAndModuleNameAndPhaseNameAndName(buildNumber, moduleName, phaseName, taskName).map(task -> new TaskDto(taskName, task.getState()));
     }
 

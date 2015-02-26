@@ -89,20 +89,20 @@ public class ModuleResourceTest {
     @Test
     public void shouldGetModule() throws Exception {
         optional = Optional.of(moduleDto);
-        when(reportService.findModulesByBuildNumberAndName(eq(1), eq("module"))).thenReturn(optional);
+        when(reportService.findModuleByBuildNumberAndName(eq(1), eq("module"))).thenReturn(optional);
         assertEquals(moduleDto, resource.get(1, "module").getEntity());
     }
 
     @Test
     public void shouldNotGetModuleWhenBuildDoesNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(reportService).findModulesByBuildNumberAndName(eq(1), eq("module"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findModuleByBuildNumberAndName(eq(1), eq("module"));
         assertEquals("error", ((Error) resource.get(1, "module").getEntity()).getMessage());
     }
 
     @Test
     public void shouldNotGetModuleWhenModuleDoesNotExist() throws Exception {
         optional = Optional.empty();
-        when(reportService.findModulesByBuildNumberAndName(eq(1), eq("module"))).thenReturn(optional);
+        when(reportService.findModuleByBuildNumberAndName(eq(1), eq("module"))).thenReturn(optional);
         assertEquals("Module with name [module] for build with number [1] cannot be found", ((Error) resource.get(1, "module").getEntity()).getMessage());
     }
 

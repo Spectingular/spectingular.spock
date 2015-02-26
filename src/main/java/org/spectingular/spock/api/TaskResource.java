@@ -70,7 +70,7 @@ public class TaskResource {
         try {
             LOG.debug(format("Get task with name [%s] for build with number [%d] and phase with name [%s]", taskName, buildNumber, phaseName));
 
-            final Optional<TaskDto> ot = reportService.findTasksByBuildNumberAndPhaseNameAndName(buildNumber, phaseName, taskName);
+            final Optional<TaskDto> ot = reportService.findTaskByBuildNumberAndPhaseNameAndName(buildNumber, phaseName, taskName);
             if (ot.isPresent()) {
                 response = ok(ot.get()).build();
             } else {
@@ -116,7 +116,7 @@ public class TaskResource {
         Response response;
         try {
             LOG.debug(format("Get task with name [%s] for build with number [%d] and module with name [%s] and phase with name [%s]", taskName, buildNumber, moduleName, phaseName));
-            final Optional<TaskDto> ot = reportService.findTasksByBuildNumberAndModuleNameAndPhaseNameAndName(buildNumber, moduleName, phaseName, taskName);
+            final Optional<TaskDto> ot = reportService.findTaskByBuildNumberAndModuleNameAndPhaseNameAndName(buildNumber, moduleName, phaseName, taskName);
             if (ot.isPresent()) {
                 response = ok(ot.get()).build();
             } else {

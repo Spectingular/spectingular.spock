@@ -1,7 +1,6 @@
 package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
-import org.spectingular.spock.api.dto.ModuleDto;
 import org.spectingular.spock.api.dto.PhaseDto;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Phase;
@@ -68,7 +67,7 @@ public class PhaseResource {
         Response response;
         try {
             LOG.debug(format("Get phase with name [%s] for build with number [%d]", phaseName, buildNumber));
-            final Optional<PhaseDto> op = reportService.findPhasesByBuildNumberAndName(buildNumber, phaseName);
+            final Optional<PhaseDto> op = reportService.findPhaseByBuildNumberAndName(buildNumber, phaseName);
             if (op.isPresent()) {
                 response = ok(op.get()).build();
             } else {
@@ -112,7 +111,7 @@ public class PhaseResource {
         Response response;
         try {
             LOG.debug(format("Get phase with name [%s] for build with number [%d] and module with name [%s]", phaseName, buildNumber, moduleName));
-            final Optional<PhaseDto> op = reportService.findPhasesByBuildNumberAndModuleNameAndName(buildNumber, moduleName, phaseName);
+            final Optional<PhaseDto> op = reportService.findPhaseByBuildNumberAndModuleNameAndName(buildNumber, moduleName, phaseName);
             if (op.isPresent()) {
                 response = ok(op.get()).build();
             } else {

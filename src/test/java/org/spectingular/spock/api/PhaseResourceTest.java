@@ -89,20 +89,20 @@ public class PhaseResourceTest {
     @Test
     public void shouldGetPhaseForBuild() throws Exception {
         optional = of(phaseDto);
-        when(reportService.findPhasesByBuildNumberAndName(eq(1), eq("phase"))).thenReturn(optional);
+        when(reportService.findPhaseByBuildNumberAndName(eq(1), eq("phase"))).thenReturn(optional);
         assertEquals(phaseDto, resource.get(1, "phase").getEntity());
     }
 
     @Test
     public void shouldNotGetPhaseForBuildWhenBuildDoesNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(reportService).findPhasesByBuildNumberAndName(eq(1), eq("phase"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findPhaseByBuildNumberAndName(eq(1), eq("phase"));
         assertEquals("error", ((Error) resource.get(1, "phase").getEntity()).getMessage());
     }
 
     @Test
     public void shouldNotGetPhaseForBuildWhenPhaseDoesNotExist() throws Exception {
         optional = empty();
-        when(reportService.findPhasesByBuildNumberAndName(eq(1), eq("phase"))).thenReturn(optional);
+        when(reportService.findPhaseByBuildNumberAndName(eq(1), eq("phase"))).thenReturn(optional);
         assertEquals("Phase with name [phase] for build with number [1] cannot be found", ((Error) resource.get(1, "phase").getEntity()).getMessage());
     }
 
@@ -161,20 +161,20 @@ public class PhaseResourceTest {
     @Test
     public void shouldGetPhaseForModule() throws Exception {
         optional = of(phaseDto);
-        when(reportService.findPhasesByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"))).thenReturn(optional);
+        when(reportService.findPhaseByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"))).thenReturn(optional);
         assertEquals(phaseDto, resource.get(1, "module", "phase").getEntity());
     }
 
     @Test
     public void shouldNotGetPhaseForModuleWhenTheBuildAndOrModuleDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(reportService).findPhasesByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findPhaseByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"));
         assertEquals("error", ((Error) resource.get(1, "module", "phase").getEntity()).getMessage());
     }
 
     @Test
     public void shouldNotGetPhaseForModuleWhenThePhaseDoesNotExist() throws Exception {
         optional = empty();
-        when(reportService.findPhasesByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"))).thenReturn(optional);
+        when(reportService.findPhaseByBuildNumberAndModuleNameAndName(eq(1), eq("module"), eq("phase"))).thenReturn(optional);
         assertEquals("Phase with name [phase] for module with name [module] and build with number [1] cannot be found", ((Error) resource.get(1, "module", "phase").getEntity()).getMessage());
     }
 

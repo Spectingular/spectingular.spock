@@ -93,20 +93,20 @@ public class TaskResourceTest {
     @Test
     public void shouldGetTaskForBuild() throws Exception {
         optional = of(taskDto);
-        when(reportService.findTasksByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
+        when(reportService.findTaskByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
         assertEquals(taskDto, resource.get(1, "phase", "task").getEntity());
     }
 
     @Test
     public void shouldNotGetTaskForBuildWhenBuildAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(reportService).findTasksByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findTaskByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"));
         assertEquals("error", ((Error) resource.get(1, "phase", "task").getEntity()).getMessage());
     }
 
     @Test
     public void shouldNotGetTaskForBuildWhenTaskDoesNotExist() throws Exception {
         optional = empty();
-        when(reportService.findTasksByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
+        when(reportService.findTaskByBuildNumberAndPhaseNameAndName(eq(1), eq("phase"), eq("task"))).thenReturn(optional);
         assertEquals("Task with name [task] for phase with name [phase] and build with number [1] cannot be found", ((Error) resource.get(1, "phase", "task").getEntity()).getMessage());
     }
 
@@ -165,20 +165,20 @@ public class TaskResourceTest {
     @Test
     public void shouldGetTaskForModule() throws Exception {
         optional = of(taskDto);
-        when(reportService.findTasksByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"))).thenReturn(optional);
+        when(reportService.findTaskByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"))).thenReturn(optional);
         assertEquals(taskDto, resource.get(1, "module", "phase", "task").getEntity());
     }
 
     @Test
     public void shouldNotGetTaskForModuleWhenBuildAndOrPhaseDoNotExist() throws Exception {
-        doThrow(new IllegalArgumentException("error")).when(reportService).findTasksByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"));
+        doThrow(new IllegalArgumentException("error")).when(reportService).findTaskByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"));
         assertEquals("error", ((Error) resource.get(1, "module", "phase", "task").getEntity()).getMessage());
     }
 
     @Test
     public void shouldNotGetTaskForModuleWhenTaskDoesNotExist() throws Exception {
         optional = empty();
-        when(reportService.findTasksByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"))).thenReturn(optional);
+        when(reportService.findTaskByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"))).thenReturn(optional);
         assertEquals("Task with name [task] for phase with name [module] and module with name [phase] and build with number [1] cannot be found", ((Error) resource.get(1, "module", "phase", "task").getEntity()).getMessage());
     }
 

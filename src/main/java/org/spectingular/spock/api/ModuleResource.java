@@ -1,7 +1,6 @@
 package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
-import org.spectingular.spock.api.dto.BuildDto;
 import org.spectingular.spock.api.dto.ModuleDto;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Module;
@@ -68,7 +67,7 @@ public class ModuleResource {
         Response response;
         try {
             LOG.debug(format("Get module with name [%s] for build with number [%d]", moduleName, buildNumber));
-            final Optional<ModuleDto> om = reportService.findModulesByBuildNumberAndName(buildNumber, moduleName);
+            final Optional<ModuleDto> om = reportService.findModuleByBuildNumberAndName(buildNumber, moduleName);
             if (om.isPresent()) {
                 response = ok(om.get()).build();
             } else {
