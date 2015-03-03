@@ -133,7 +133,6 @@ public class PhaseResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/builds/{buildNumber}/phases")
-    @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Phase phase) {
         Response response;
         try {
@@ -182,7 +181,6 @@ public class PhaseResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/builds/{buildNumber}/modules/{moduleName}/phases")
-    @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @Valid Phase phase) {
         Response response;
         try {

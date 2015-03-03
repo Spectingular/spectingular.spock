@@ -18,7 +18,7 @@ public class JerseyConfig extends ResourceConfig {
     public JerseyConfig() {
         packages(true, "org.spectingular.spock.api");
         property(ServerProperties.RESPONSE_SET_STATUS_OVER_SEND_ERROR, true);
-        register(LoggingFilter.class);
+//        register(LoggingFilter.class);
         register(JacksonFeature.class);
     }
 }

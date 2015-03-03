@@ -2,12 +2,11 @@ package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
 import org.spectingular.spock.api.dto.BuildDto;
-import org.spectingular.spock.api.dto.PhaseDto;
-import org.spectingular.spock.api.dto.TaskDto;
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.State;
-import org.spectingular.spock.services.*;
+import org.spectingular.spock.services.BuildService;
+import org.spectingular.spock.services.ReportService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
@@ -16,9 +15,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.Response.Status.CONFLICT;

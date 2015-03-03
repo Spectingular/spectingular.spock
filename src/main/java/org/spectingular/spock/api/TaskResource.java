@@ -138,7 +138,6 @@ public class TaskResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/builds/{buildNumber}/phases/{phaseName}/tasks")
-    @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
         Response response;
         try {
@@ -187,7 +186,6 @@ public class TaskResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/builds/{buildNumber}/modules/{moduleName}/phases/{phaseName}/tasks")
-    @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @PathParam("moduleName") String moduleName, final @PathParam("phaseName") String phaseName, final @Valid Task task) {
         Response response;
         try {

@@ -88,7 +88,6 @@ public class ModuleResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/builds/{buildNumber}/modules")
-    @Transactional
     public Response start(final @PathParam("buildNumber") int buildNumber, final @Valid Module module) {
         Response response;
         try {
