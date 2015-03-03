@@ -14,8 +14,7 @@ import javax.validation.constraints.NotNull;
  * Phase represents a lifecycle phase in a build system.
  */
 @CompoundIndexes({
-        @CompoundIndex(name = "phase_build", unique = true, def = "{'name': 1, 'build': 1}"),
-        @CompoundIndex(name = "phase_module", unique = true, def = "{'name': 1, 'module': 1}")
+        @CompoundIndex(name = "phase_build_module", unique = true, def = "{'name': 1, 'build': 1, 'module': 1}")
 })
 @Document(collection = "phases")
 public class Phase {
@@ -31,7 +30,7 @@ public class Phase {
     @JsonIgnore
     private Module module;
 
-    
+
     /**
      * Gets the name.
      * @return name The name.
@@ -81,7 +80,7 @@ public class Phase {
     }
 
     /**
-     * Gets the {@link org.spectingular.spock.domain.Module}. 
+     * Gets the {@link org.spectingular.spock.domain.Module}.
      * @return module The {@link org.spectingular.spock.domain.Module}.
      */
     public Module getModule() {
