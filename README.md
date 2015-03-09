@@ -1,6 +1,6 @@
+#Spectingular.Spock#
+*The needs of the many outweigh the needs of the few*
 
-
-# spectingular.spock [![Build Status](https://travis-ci.org/Spectingular/spectingular.spock.svg?branch=master)](https://travis-ci.org/Spectingular/spectingular.spock)
 spectingular.spock is a dashboard that provides insight into the state of the spectingular.builder.
 
 ### Pre-requisites
@@ -16,17 +16,18 @@ Lets call the instance spock. Complete the following steps to do so.
 3. add user and assign roles 
 
 ```json
- db.createUser(
-      {
-          "user": "spock",
-          "pwd": "spock",
-          "roles": [{"role": "userAdmin", "db": "spock"}]
-      }
-  )
-  ```
-  
-  ### Starting the application
-  ```shell
-  mvn clean install sprint-boot:run
-  ```
-  
+db.createUser(
+  {
+    "user": "spock",
+    "pwd": "spock",
+    "roles": [{"role": "userAdmin", "db": "spock"}]
+  }
+)
+```
+
+Use `db.addUser` in mongo &lt; 2.6
+
+### Starting the application
+```shell
+mvn spring-boot:run
+```
