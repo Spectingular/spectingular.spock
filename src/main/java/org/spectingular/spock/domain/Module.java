@@ -22,7 +22,6 @@ public class Module {
     @Id
     private ObjectId id;
     @NotNull
-    @Indexed(unique = true)
     private String name;
     private State state;
     @DBRef
