@@ -12,7 +12,6 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Spock.
  */
 @SpringBootApplication
-@PropertySource("classpath:/spock-config.properties")
 public class Spock extends SpringBootServletInitializer {
     private static final Logger LOG = getLogger(Spock.class);
 
