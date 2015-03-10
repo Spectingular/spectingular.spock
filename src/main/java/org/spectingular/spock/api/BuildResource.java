@@ -1,7 +1,7 @@
 package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
-import org.spectingular.spock.api.dto.BuildDto;
+import org.spectingular.spock.dto.BuildDto;
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.State;

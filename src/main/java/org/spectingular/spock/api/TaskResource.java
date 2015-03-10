@@ -1,7 +1,7 @@
 package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
-import org.spectingular.spock.api.dto.TaskDto;
+import org.spectingular.spock.dto.TaskDto;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.domain.Task;
@@ -9,7 +9,6 @@ import org.spectingular.spock.services.ReportService;
 import org.spectingular.spock.services.TaskService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;

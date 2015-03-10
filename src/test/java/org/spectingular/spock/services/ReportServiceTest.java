@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.spectingular.spock.api.dto.*;
+import org.spectingular.spock.dto.*;
 import org.spectingular.spock.domain.*;
 
 import java.util.*;
@@ -76,7 +76,6 @@ public class ReportServiceTest extends TestCase {
         when(state.getStartDate()).thenReturn(new Date());
         when(state.getStopDate()).thenReturn(new Date());
         when(state.isSuccess()).thenReturn(true);
-        when(state.getRunState()).thenReturn(RunState.FINISHED_SUCCESSFULLY);
         when(module.getName()).thenReturn("module");
         when(phase.getName()).thenReturn("phase");
         builds = asList(new Build[]{build});

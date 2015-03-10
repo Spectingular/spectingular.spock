@@ -1,8 +1,10 @@
-package org.spectingular.spock.api.dto;
+package org.spectingular.spock.dto;
 
 import org.spectingular.spock.domain.State;
 
 import java.util.Date;
+
+import static org.spectingular.spock.dto.RunState.get;
 
 /** Task dto. */
 public class TaskDto {
@@ -20,7 +22,7 @@ public class TaskDto {
         this.name = name;
         this.startDate = state.getStartDate();
         this.stopDate = state.getStopDate();
-        this.state = state.getRunState();
+        this.state = get(state);
     }
 
     /**
@@ -48,8 +50,8 @@ public class TaskDto {
     }
 
     /**
-     * Gets the {@link org.spectingular.spock.api.dto.RunState}.
-     * @return runState The {@link org.spectingular.spock.api.dto.RunState}.
+     * Gets the {@link org.spectingular.spock.dto.RunState}.
+     * @return runState The {@link org.spectingular.spock.dto.RunState}.
      */
     public RunState getState() {
         return state;

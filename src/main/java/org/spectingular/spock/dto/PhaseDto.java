@@ -1,29 +1,31 @@
-package org.spectingular.spock.api.dto;
+package org.spectingular.spock.dto;
 
 import org.spectingular.spock.domain.State;
 
 import java.util.Date;
 import java.util.List;
 
-/** Module dto. */
-public class ModuleDto {
+import static org.spectingular.spock.dto.RunState.get;
+
+/** Phase dto. */
+public class PhaseDto {
     private String name;
     private Date startDate;
     private Date stopDate;
     private RunState state;
 
-    private List<PhaseDto> phases;
+    private List<TaskDto> tasks;
 
     /**
      * Constructor.
      * @param name  The name.
      * @param state The {@link org.spectingular.spock.domain.State}.
      */
-    public ModuleDto(final String name, final State state) {
+    public PhaseDto(final String name, final State state) {
         this.name = name;
         this.startDate = state.getStartDate();
         this.stopDate = state.getStopDate();
-        this.state = state.getRunState();
+        this.state = get(state);
     }
 
     /**
@@ -51,26 +53,26 @@ public class ModuleDto {
     }
 
     /**
-     * Gets the {@link org.spectingular.spock.api.dto.RunState}.
-     * @return runState The {@link org.spectingular.spock.api.dto.RunState}.
+     * Gets the {@link org.spectingular.spock.dto.RunState}.
+     * @return runState The {@link org.spectingular.spock.dto.RunState}.
      */
     public RunState getState() {
         return state;
     }
 
     /**
-     * Sets the {@link org.spectingular.spock.api.dto.PhaseDto}s
-     * @param phases The {@link org.spectingular.spock.api.dto.PhaseDto}s.
+     * Sets the {@link org.spectingular.spock.dto.TaskDto}s.
+     * @param tasks The list of {@link org.spectingular.spock.dto.TaskDto}s.
      */
-    public void setPhases(final List<PhaseDto> phases) {
-        this.phases = phases;
+    public void setTasks(List<TaskDto> tasks) {
+        this.tasks = tasks;
     }
 
     /**
-     * Gets the phases.
-     * @return phases The list of {@link org.spectingular.spock.api.dto.PhaseDto}s.
+     * Gets the {@link org.spectingular.spock.dto.TaskDto}s.
+     * @return tasks The list of {@link org.spectingular.spock.dto.TaskDto}s.
      */
-    public List<PhaseDto> getPhases() {
-        return phases;
+    public List<TaskDto> getTasks() {
+        return tasks;
     }
 }

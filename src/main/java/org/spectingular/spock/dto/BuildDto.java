@@ -1,9 +1,11 @@
-package org.spectingular.spock.api.dto;
+package org.spectingular.spock.dto;
 
 import org.spectingular.spock.domain.State;
 
 import java.util.Date;
 import java.util.List;
+
+import static org.spectingular.spock.dto.RunState.get;
 
 /** Build dto. */
 public class BuildDto {
@@ -24,7 +26,7 @@ public class BuildDto {
         this.number = number;
         this.startDate = state.getStartDate();
         this.stopDate = state.getStopDate();
-        this.state = state.getRunState();
+        this.state = get(state);
     }
 
     /**
@@ -52,16 +54,16 @@ public class BuildDto {
     }
 
     /**
-     * Gets the {@link org.spectingular.spock.api.dto.RunState}.
-     * @return runState The {@link org.spectingular.spock.api.dto.RunState}.
+     * Gets the {@link org.spectingular.spock.dto.RunState}.
+     * @return runState The {@link org.spectingular.spock.dto.RunState}.
      */
     public RunState getState() {
         return state;
     }
 
     /**
-     * Sets the {@link org.spectingular.spock.api.dto.ModuleDto}s.
-     * @param modules The {@link org.spectingular.spock.api.dto.ModuleDto}s.
+     * Sets the {@link org.spectingular.spock.dto.ModuleDto}s.
+     * @param modules The {@link org.spectingular.spock.dto.ModuleDto}s.
      */
     public void setModules(final List<ModuleDto> modules) {
         this.modules = modules;
@@ -69,15 +71,15 @@ public class BuildDto {
 
     /**
      * Gets the modules.
-     * @return modules The list of {@link org.spectingular.spock.api.dto.ModuleDto}s.
+     * @return modules The list of {@link org.spectingular.spock.dto.ModuleDto}s.
      */
     public List<ModuleDto> getModules() {
         return modules;
     }
 
     /**
-     * Sets the {@link org.spectingular.spock.api.dto.PhaseDto}s
-     * @param phases The {@link org.spectingular.spock.api.dto.PhaseDto}s.
+     * Sets the {@link org.spectingular.spock.dto.PhaseDto}s
+     * @param phases The {@link org.spectingular.spock.dto.PhaseDto}s.
      */
     public void setPhases(final List<PhaseDto> phases) {
         this.phases = phases;
@@ -85,7 +87,7 @@ public class BuildDto {
 
     /**
      * Gets the phases.
-     * @return phases The list of {@link org.spectingular.spock.api.dto.PhaseDto}s.
+     * @return phases The list of {@link org.spectingular.spock.dto.PhaseDto}s.
      */
     public List<PhaseDto> getPhases() {
         return phases;

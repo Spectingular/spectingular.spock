@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.spectingular.spock.api.dto.ModuleDto;
+import org.spectingular.spock.dto.ModuleDto;
 import org.spectingular.spock.domain.Error;
 import org.spectingular.spock.domain.Module;
 import org.spectingular.spock.domain.State;
