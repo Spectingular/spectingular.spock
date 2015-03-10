@@ -2,7 +2,7 @@ package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
 import org.spectingular.spock.dto.TaskDto;
-import org.spectingular.spock.domain.Error;
+import org.spectingular.spock.dto.Error;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.domain.Task;
 import org.spectingular.spock.services.ReportService;

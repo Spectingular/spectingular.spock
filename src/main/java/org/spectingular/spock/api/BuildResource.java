@@ -3,7 +3,7 @@ package org.spectingular.spock.api;
 import org.slf4j.Logger;
 import org.spectingular.spock.dto.BuildDto;
 import org.spectingular.spock.domain.Build;
-import org.spectingular.spock.domain.Error;
+import org.spectingular.spock.dto.Error;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.services.BuildService;
 import org.spectingular.spock.services.ReportService;

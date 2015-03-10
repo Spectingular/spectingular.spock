@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.spectingular.spock.dto.PhaseDto;
-import org.spectingular.spock.domain.Error;
+import org.spectingular.spock.dto.Error;
 import org.spectingular.spock.domain.Phase;
 import org.spectingular.spock.domain.State;
 import org.spectingular.spock.services.PhaseService;

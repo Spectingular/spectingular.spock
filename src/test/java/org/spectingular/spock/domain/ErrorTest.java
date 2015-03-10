@@ -3,13 +3,14 @@ package org.spectingular.spock.domain;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.spectingular.spock.dto.Error;
 
 import static org.junit.Assert.assertEquals;
 
-/** Test class for {@link org.spectingular.spock.domain.Error}. */
+/** Test class for {@link org.spectingular.spock.dto.Error}. */
 @RunWith(MockitoJUnitRunner.class)
 public class ErrorTest {
-    private Error error; // class under test
+    private org.spectingular.spock.dto.Error error; // class under test
 
     @Test
     public void shouldSetMessage() throws Exception {

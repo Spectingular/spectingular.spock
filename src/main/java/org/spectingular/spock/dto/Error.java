@@ -1,4 +1,4 @@
-package org.spectingular.spock.domain;
+package org.spectingular.spock.dto;
 
 /**
  * Error.
