@@ -1,7 +1,6 @@
 package org.spectingular.spock.services;
 
 import org.spectingular.spock.domain.Build;
-import org.spectingular.spock.domain.Phase;
 import org.spectingular.spock.domain.State;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.String.format;
 import static java.util.Optional.empty;
 
 @Service

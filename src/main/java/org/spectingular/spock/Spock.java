@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.context.annotation.PropertySource;
 
 import static org.slf4j.LoggerFactory.getLogger;
 

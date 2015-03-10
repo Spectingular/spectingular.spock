@@ -1,12 +1,8 @@
 package org.spectingular.spock.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.spectingular.spock.dto.RunState;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-
-import static org.spectingular.spock.dto.RunState.*;
 
 /**
  * State represents the state of something.

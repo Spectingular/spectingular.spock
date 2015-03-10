@@ -1,10 +1,10 @@
 package org.spectingular.spock.api;
 
 import org.slf4j.Logger;
-import org.spectingular.spock.dto.ModuleDto;
-import org.spectingular.spock.dto.Error;
 import org.spectingular.spock.domain.Module;
 import org.spectingular.spock.domain.State;
+import org.spectingular.spock.dto.Error;
+import org.spectingular.spock.dto.ModuleDto;
 import org.spectingular.spock.services.ModuleService;
 import org.spectingular.spock.services.ReportService;
 import org.springframework.dao.DuplicateKeyException;
