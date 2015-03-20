@@ -30,7 +30,7 @@ interface TaskRepository extends Repository<Task, String> {
 
     /**
      * Persists the {@link org.spectingular.spock.domain.Task}.
-     * @return phase The {@link org.spectingular.spock.domain.Task}.
+     * @return task The {@link org.spectingular.spock.domain.Task}.
      */
     Task save(Task task);
 
