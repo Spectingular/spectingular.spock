@@ -6,6 +6,10 @@ package org.spectingular.spock.dto;
 public class Error {
     private String message;
 
+    /** Default constructor. */
+    public Error() {
+    }
+
     /**
      * Default constructor.
      * @param message The message.

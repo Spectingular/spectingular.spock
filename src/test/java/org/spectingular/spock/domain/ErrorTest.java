@@ -10,8 +10,6 @@ import static org.junit.Assert.assertEquals;
 /** Test class for {@link org.spectingular.spock.dto.Error}. */
 @RunWith(MockitoJUnitRunner.class)
 public class ErrorTest {
-    private org.spectingular.spock.dto.Error error; // class under test
-
     @Test
     public void shouldSetMessage() throws Exception {
         assertEquals("this is error 1", new Error("this is error 1").getMessage());

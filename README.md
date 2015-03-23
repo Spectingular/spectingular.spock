@@ -20,7 +20,7 @@ db.createUser(
   {
     "user": "spock",
     "pwd": "spock",
-    "roles": [{"role": "userAdmin", "db": "spock"}]
+    "roles": [{"role": "userAdmin", "db": "test-spock"}]
   }
 )
 ```

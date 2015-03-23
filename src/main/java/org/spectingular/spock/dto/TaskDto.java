@@ -13,6 +13,10 @@ public class TaskDto {
     private Date stopDate;
     private RunState state;
 
+    /** Default constructor. */
+    public TaskDto() {
+    }
+
     /**
      * Constructor.
      * @param name  The name.

@@ -16,6 +16,10 @@ public class PhaseDto {
 
     private List<TaskDto> tasks;
 
+    /** Default constructor. */
+    public PhaseDto() {
+    }
+
     /**
      * Constructor.
      * @param name  The name.

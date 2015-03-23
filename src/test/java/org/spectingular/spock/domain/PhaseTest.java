@@ -1,6 +1,5 @@
 package org.spectingular.spock.domain;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -16,6 +16,10 @@ public class ModuleDto {
 
     private List<PhaseDto> phases;
 
+    /** Default contructor. */
+    public ModuleDto() {
+    }
+
     /**
      * Constructor.
      * @param name  The name.

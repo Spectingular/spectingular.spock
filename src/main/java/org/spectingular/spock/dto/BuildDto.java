@@ -17,6 +17,10 @@ public class BuildDto {
     private List<ModuleDto> modules;
     private List<PhaseDto> phases;
 
+    /** Default constructor. */
+    public BuildDto() {
+    }
+
     /**
      * Constructor.
      * @param number The number.
