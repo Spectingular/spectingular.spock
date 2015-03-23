@@ -1,4 +1,4 @@
-#Spectingular.Spock#
+#Spectingular.Spock [![Build Status](https://travis-ci.org/Spectingular/spectingular.spock.svg?branch=master)](https://travis-ci.org/Spectingular/spectingular.spock)
 *The needs of the many outweigh the needs of the few*
 
 spectingular.spock is a dashboard that provides insight into the state of the spectingular.builder.
