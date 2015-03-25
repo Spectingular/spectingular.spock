@@ -1,5 +1,6 @@
 package org.spectingular.spock.services;
 
+import com.mongodb.DBObject;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,15 +8,18 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.spectingular.spock.dto.*;
 import org.spectingular.spock.domain.*;
+import org.spectingular.spock.dto.BuildDto;
+import org.spectingular.spock.dto.ModuleDto;
+import org.spectingular.spock.dto.PhaseDto;
+import org.spectingular.spock.dto.TaskDto;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
 import static java.util.Optional.of;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,6 +38,8 @@ public class ReportServiceTest extends TestCase {
     private PhaseService phaseService;
     @Mock
     private TaskService taskService;
+    @Mock
+    private ResultService resultService;
 
     @Mock
     private Build build;
@@ -66,6 +72,12 @@ public class ReportServiceTest extends TestCase {
     private List<Task> tasks;
     private Optional<Task> taskOptional;
 
+    @Mock
+    private Result result;
+    @Mock
+    private DBObject resultData;
+    private Optional<Result> resultOptional;
+
     @Before
     public void setUp() throws Exception {
         when(build.getState()).thenReturn(state);
@@ -78,10 +90,10 @@ public class ReportServiceTest extends TestCase {
         when(state.isSuccess()).thenReturn(true);
         when(module.getName()).thenReturn("module");
         when(phase.getName()).thenReturn("phase");
-        builds = asList(new Build[]{build});
-        modules = asList(new Module[]{module});
-        phases = asList(new Phase[]{phase});
-        tasks = asList(new Task[]{task});
+        builds = asList(build);
+        modules = asList(module);
+        phases = asList(phase);
+        tasks = asList(task);
     }
 
     @Test
@@ -222,6 +234,30 @@ public class ReportServiceTest extends TestCase {
 
         assertTrue(op.isPresent());
         verify(taskService).findByBuildNumberAndModuleNameAndPhaseNameAndName(eq(1), eq("module"), eq("phase"), eq("task"));
+    }
+
+    @Test
+    public void shouldFindResultsByBuildNumberAndPhaseNameAndTaskName() throws Exception {
+        resultOptional = of(result);
+        when(resultService.findByBuildNumberAndPhaseNameAndTaskName(eq(1), eq("phase"), eq("task"))).thenReturn(resultOptional);
+        when(result.getData()).thenReturn(resultData);
+
+        final Optional<String> op = service.findResultByBuildNumberAndPhaseNameAndTaskName(1, "phase", "task");
+
+        assertTrue(op.isPresent());
+        verify(resultService).findByBuildNumberAndPhaseNameAndTaskName(eq(1), eq("phase"), eq("task"));
+    }
+
+    @Test
+    public void shouldFindResultsByBuildNumberAndModuleNameAndPhaseNameAndTaskName() throws Exception {
+        resultOptional = of(result);
+        when(resultService.findByBuildNumberAndModuleNameAndPhaseNameAndTaskName(eq(1), eq("module"), eq("phase"), eq("task"))).thenReturn(resultOptional);
+        when(result.getData()).thenReturn(resultData);
+
+        final Optional<String> op = service.findResultByBuildNumberAndModuleNameAndPhaseNameAndTaskName(1, "module", "phase", "task");
+
+        assertTrue(op.isPresent());
+        verify(resultService).findByBuildNumberAndModuleNameAndPhaseNameAndTaskName(eq(1), eq("module"), eq("phase"), eq("task"));
     }
 
 }

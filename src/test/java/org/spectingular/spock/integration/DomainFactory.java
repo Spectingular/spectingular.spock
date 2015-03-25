@@ -1,12 +1,12 @@
 package org.spectingular.spock.integration;
 
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import org.spectingular.spock.domain.*;
 
 import java.util.Date;
 
-/**
- * Created by mischa on 20/03/15.
- */
+/** Factory for creating domain objects. */
 public final class DomainFactory {
     public static Build build(final String number) {
         final Build build = new Build();
@@ -37,5 +37,11 @@ public final class DomainFactory {
         final Task task = new Task();
         task.setName(name);
         return task;
+    }
+
+    public static Result result(final String data) {
+        final Result result = new Result();
+        result.setData((DBObject) JSON.parse(data));
+        return result;
     }
 }

@@ -3,6 +3,7 @@ package org.spectingular.spock.services;
 import org.spectingular.spock.domain.Build;
 import org.spectingular.spock.domain.Module;
 import org.spectingular.spock.domain.Phase;
+import org.spectingular.spock.domain.Task;
 
 import javax.annotation.Resource;
 import java.util.function.Function;
@@ -17,6 +18,8 @@ public class BaseService {
     private BuildRepository buildRepository;
     @Resource
     private PhaseRepository phaseRepository;
+    @Resource
+    private TaskRepository taskRepository;
     @Resource
     private ModuleRepository moduleRepository;
 
@@ -80,5 +83,38 @@ public class BaseService {
                 phaseRepository.findByModuleAndName(module, phaseName)
                         .map(o -> fn.apply(o))
                         .orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for module with name [%s] and build with number [%d] cannot be found", phaseName, moduleName, buildNumber))));
+    }
+
+    /**
+     * Find the {@link org.spectingular.spock.domain.Task} for the {@link org.spectingular.spock.domain.Phase} matching the given parameters.
+     * @param buildNumber The build number.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @param fn          The {@link java.util.function.Function}.
+     * @param <T>         The result.
+     * @return result The result.
+     * @throws IllegalArgumentException
+     */
+    protected <T> T findTask(final int buildNumber, final String phaseName, final String taskName, final Function<Task, T> fn) throws IllegalArgumentException {
+        return findPhase(buildNumber, phaseName, (Function<Phase, T>) phase -> taskRepository.findByPhaseAndName(phase, taskName)
+                .map(o -> fn.apply(o))
+                .orElseThrow(() -> new IllegalArgumentException(format("Task with name [%s] for phase with name [%s] and build with number [%d] cannot be found", taskName, phaseName, buildNumber))));
+    }
+
+    /**
+     * Find the {@link org.spectingular.spock.domain.Task} for the {@link org.spectingular.spock.domain.Phase} matching the given parameters.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @param fn          The {@link java.util.function.Function}.
+     * @param <T>         The result.
+     * @return result The result.
+     * @throws IllegalArgumentException
+     */
+    protected <T> T findTask(final int buildNumber, final String moduleName, final String phaseName, final String taskName, final Function<Task, T> fn) throws IllegalArgumentException {
+        return findPhase(buildNumber, moduleName, phaseName, (Function<Phase, T>) phase -> taskRepository.findByPhaseAndName(phase, taskName)
+                .map(o -> fn.apply(o))
+                .orElseThrow(() -> new IllegalArgumentException(format("Task with name [%s] for phase with name [%s] and module with name [%s]and build with number [%d] cannot be found", taskName, phaseName, moduleName, buildNumber))));
     }
 }

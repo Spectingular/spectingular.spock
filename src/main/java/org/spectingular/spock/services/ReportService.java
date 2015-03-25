@@ -24,6 +24,8 @@ public class ReportService {
     private PhaseService phaseService;
     @Resource
     private TaskService taskService;
+    @Resource
+    private ResultService resultService;
 
     /**
      * Gets all the {@link org.spectingular.spock.dto.BuildDto}s.
@@ -168,6 +170,30 @@ public class ReportService {
      */
     public Optional<TaskDto> findTaskByBuildNumberAndModuleNameAndPhaseNameAndName(final int buildNumber, final String moduleName, final String phaseName, final String taskName) throws IllegalArgumentException {
         return taskService.findByBuildNumberAndModuleNameAndPhaseNameAndName(buildNumber, moduleName, phaseName, taskName).map(task -> new TaskDto(taskName, task.getState()));
+    }
+
+    /**
+     * Gets the result data for the {@link org.spectingular.spock.domain.Task} matching the given parameters.
+     * @param buildNumber The build number.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @return data The data.
+     */
+    public Optional<String> findResultByBuildNumberAndPhaseNameAndTaskName(final int buildNumber, final String phaseName, final String taskName) throws IllegalArgumentException {
+        return resultService.findByBuildNumberAndPhaseNameAndTaskName(buildNumber, phaseName, taskName).map(result -> result.getData().toString());
+    }
+
+
+    /**
+     * Gets the result data for the {@link org.spectingular.spock.domain.Task} matching the given parameters.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @return data The data.
+     */
+    public Optional<String> findResultByBuildNumberAndModuleNameAndPhaseNameAndTaskName(final int buildNumber, final String moduleName, final String phaseName, final String taskName) throws IllegalArgumentException {
+        return resultService.findByBuildNumberAndModuleNameAndPhaseNameAndTaskName(buildNumber, moduleName, phaseName, taskName).map(result -> result.getData().toString());
     }
 
 

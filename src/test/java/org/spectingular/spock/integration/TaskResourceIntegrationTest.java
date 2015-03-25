@@ -159,7 +159,7 @@ public class TaskResourceIntegrationTest extends IntegrationTestBase {
         assertTrue(entity2.getStatusCode().is4xxClientError());
         assertEquals("Build with number [100] cannot be found", entity2.getBody().getMessage());
 
-        // if the build does not exist
+        // if the phase does not exist
         final ResponseEntity<Error> entity3 = registerTask("1", "s", "g", Error.class);
         assertTrue(entity3.getStatusCode().is4xxClientError());
         assertEquals("Phase with name [s] for build with number [1] cannot be found", entity3.getBody().getMessage());
@@ -183,7 +183,7 @@ public class TaskResourceIntegrationTest extends IntegrationTestBase {
         assertTrue(entity7.getStatusCode().is4xxClientError());
         assertEquals("Module with name [w] for build with number [1] cannot be found", entity7.getBody().getMessage());
 
-        // if the module does not exist
+        // if the phase does not exist
         final ResponseEntity<Error> entity8 = registerTask("1", "x", "s", "g", Error.class);
         assertTrue(entity8.getStatusCode().is4xxClientError());
         assertEquals("Phase with name [s] for module with name [x] and build with number [1] cannot be found", entity8.getBody().getMessage());

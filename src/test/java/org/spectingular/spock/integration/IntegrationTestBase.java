@@ -4,26 +4,19 @@ import com.mongodb.BasicDBObject;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.spectingular.spock.Spock;
-import org.spectingular.spock.domain.Build;
-import org.spectingular.spock.domain.Module;
-import org.spectingular.spock.domain.Phase;
-import org.spectingular.spock.domain.Task;
+import org.spectingular.spock.domain.*;
 import org.spectingular.spock.dto.BuildDto;
-import org.spectingular.spock.dto.ModuleDto;
-import org.spectingular.spock.dto.PhaseDto;
-import org.spectingular.spock.services.BuildService;
-import org.spectingular.spock.services.ModuleService;
-import org.spectingular.spock.services.PhaseService;
-import org.spectingular.spock.services.TaskService;
+import org.spectingular.spock.services.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
@@ -50,8 +43,6 @@ import static org.spectingular.spock.integration.DomainFactory.*;
 @IntegrationTest("server.port:0")
 public abstract class IntegrationTestBase {
     @Resource
-    private PhaseService service;
-    @Resource
     private ModuleService moduleService;
     @Resource
     private BuildService buildService;
@@ -59,6 +50,8 @@ public abstract class IntegrationTestBase {
     private PhaseService phaseService;
     @Resource
     private TaskService taskService;
+    @Resource
+    private ResultService resultService;
     @Value("${local.server.port}")
     public int port;
     @Resource
@@ -98,6 +91,9 @@ public abstract class IntegrationTestBase {
         storeTask(1, "x", "q", task("g"));
         storeTask(1, "x", "r");
 
+        storeResult(1, "p", "g", result("{\"some\":\"value\"}"));
+        storeResult(1, "x", "p", "g", result("{\"some\":\"value\"}"));
+
     }
 
     private void storeBuilds(final Build... builds) {
@@ -134,6 +130,14 @@ public abstract class IntegrationTestBase {
         for (Task task : tasks) {
             taskService.register(buildNumber, moduleName, phaseName, task);
         }
+    }
+
+    private void storeResult(final int buildNumber, final String phaseName, final String taskName, final Result result) {
+        resultService.store(buildNumber, phaseName, taskName, result);
+    }
+
+    private void storeResult(final int buildNumber, final String moduleName, final String phaseName, final String taskName, final Result result) {
+        resultService.store(buildNumber, moduleName, phaseName, taskName, result);
     }
 
 
@@ -396,6 +400,62 @@ public abstract class IntegrationTestBase {
         return putForEntity(baseApiUrl() + "/" + buildNumber + "/modules/" + moduleName + "/phases/" + phaseName + "/tasks/" + taskName, state(success), returnType);
     }
 
+    /** ......... Results ......... */
+
+    /**
+     * Gets the results.
+     * @param buildNumber The build number.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @return response The response.
+     */
+    public ResponseEntity getResults(final String buildNumber, final String phaseName, final String taskName, final Class returnType) {
+        return restTemplate.getForEntity(baseApiUrl() + "/" + buildNumber + "/phases/" + phaseName + "/tasks/" + taskName + "/results", returnType);
+    }
+
+    /**
+     * Gets the results.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @return response The response.
+     */
+    public ResponseEntity getResults(final String buildNumber, final String moduleName, final String phaseName, final String taskName, final Class returnType) {
+        return restTemplate.getForEntity(baseApiUrl() + "/" + buildNumber + "/modules/" + moduleName + "/phases/" + phaseName + "/tasks/" + taskName + "/results", returnType);
+    }
+
+    /**
+     * Store the result.
+     * @param buildNumber The build number.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @param data        The data.
+     * @return response The response.
+     */
+    public ResponseEntity storeResult(final String buildNumber, final String phaseName, final String taskName, final String data, final Class returnType) {
+        final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        final HttpEntity entity = new HttpEntity(data, headers);
+        return restTemplate.postForEntity(baseApiUrl() + "/" + buildNumber + "/phases/" + phaseName + "/tasks/" + taskName + "/results", entity, returnType);
+    }
+
+    /**
+     * Store the result.
+     * @param buildNumber The build number.
+     * @param moduleName  The module name.
+     * @param phaseName   The phase name.
+     * @param taskName    The task name.
+     * @param data        The data.
+     * @return response The response.
+     */
+    public ResponseEntity storeResult(final String buildNumber, final String moduleName, final String phaseName, final String taskName, final String data, final Class returnType) {
+        final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        final HttpEntity entity = new HttpEntity(data, headers);
+        return restTemplate.postForEntity(baseApiUrl() + "/" + buildNumber + "/modules/" + moduleName + "/phases/" + phaseName + "/tasks/" + taskName + "/results", entity, returnType);
+    }
+
 
     /** ......... Utils ......... */
 
@@ -424,66 +484,6 @@ public abstract class IntegrationTestBase {
             throw new IllegalArgumentException("Something went terribly wrong");
         }
     }
-
-//
-//
-//    public ResponseEntity addModuleToBuild(String buildNumber, String moduleName) {
-//        Module module = new Module();
-//        module.setName(moduleName);
-//        return restTemplate.postForEntity("http://localhost:" + port + "/api/builds/" + buildNumber + "/modules", module, Module.class);
-//    }
-//
-//    public ResponseEntity addPhaseToModuleAndBuild(String buildNumber, String phaseName, String module) {
-//        Phase phase = new Phase();
-//        phase.setName(phaseName);
-//        return restTemplate.postForEntity("http://localhost:" + port + "/api/builds/" + buildNumber + "/modules/" + module + "/phases", phase, Phase.class);
-//    }
-//
-//    public ResponseEntity addPhaseToBuild(String buildNumber, String phaseName) {
-//        Phase phase = new Phase();
-//        phase.setName(phaseName);
-//        return restTemplate.postForEntity("http://localhost:" + port + "/api/builds/" + buildNumber + "/phases", phase, Phase.class);
-//    }
-//
-//    public void updateBuildWithState(boolean success, Date stopDate, String buildNumber) {
-//        State state = new State();
-//        state.setSuccess(success);
-//        state.setStopDate(stopDate);
-//
-//        restTemplate.put("http://localhost:" + port + "/api/builds/" + buildNumber, state, State.class);
-//    }
-//
-//    public void updateBuildForModuleWithState(String buildNumber, String moduleName, boolean success, Date stopDate) {
-//        State state = new State();
-//        state.setSuccess(success);
-//        state.setStopDate(stopDate);
-//
-//        restTemplate.put("http://localhost:" + port + "/api/builds/" + buildNumber + "/modules/" + moduleName, state, State.class);
-//    }
-//
-//
-//    public void updatePhaseForBuildWithBuildNumber(String buildNumber, String phaseName, boolean success, Date stopDate) {
-//        State state = new State();
-//        state.setSuccess(success);
-//        state.setStopDate(stopDate);
-//
-//        restTemplate.put("http://localhost:" + port + "/api/builds/" + buildNumber + "/phases/" + phaseName, state, State.class);
-//    }
-//
-//
-//    public void updatePhaseForBuildWithBuildNumberForModule(String buildNumber, String phaseName, String moduleName, boolean success, Date stopDate) {
-//        State state = new State();
-//        state.setSuccess(success);
-//        state.setStopDate(stopDate);
-//
-//        restTemplate.put("http://localhost:" + port + "/api/builds/" + buildNumber + "/modules/" + moduleName + "/phases/" + phaseName, state, State.class);
-//    }
-//
-//    @Test
-//    public void done() {
-//        Assert.assertTrue(true);
-//    }
-
 }
 
 
