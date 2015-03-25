@@ -19,7 +19,7 @@ public class ResultService extends BaseService {
      * @return result The {@link org.spectingular.spock.domain.Result}.
      */
     public Optional<Result> findByBuildNumberAndPhaseNameAndTaskName(final int buildNumber, final String phaseName, final String taskName) throws IllegalArgumentException {
-        return findTask(buildNumber, phaseName, taskName, task -> resultRepository.findByTask(task));
+        return findTask(buildNumber, phaseName, taskName, resultRepository::findByTask);
     }
 
     /**
@@ -31,7 +31,7 @@ public class ResultService extends BaseService {
      * @return result The {@link org.spectingular.spock.domain.Result}.
      */
     public Optional<Result> findByBuildNumberAndModuleNameAndPhaseNameAndTaskName(final int buildNumber, final String moduleName, final String phaseName, final String taskName) throws IllegalArgumentException {
-        return findTask(buildNumber, moduleName, phaseName, taskName, task -> resultRepository.findByTask(task));
+        return findTask(buildNumber, moduleName, phaseName, taskName, resultRepository::findByTask);
     }
 
     /**

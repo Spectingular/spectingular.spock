@@ -131,7 +131,7 @@ public class ResultResource {
         try {
             LOG.debug(format("Storing result information for task with name [%s] for build with number [%d] and module with name [%s] and phase with name [%s]", taskName, buildNumber, moduleName, phaseName));
             final BufferedReader in = new BufferedReader(new InputStreamReader(stream));
-            String line = null;
+            String line;
             while ((line = in.readLine()) != null) {
                 builder.append(line);
             }

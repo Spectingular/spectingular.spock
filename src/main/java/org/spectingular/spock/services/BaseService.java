@@ -33,7 +33,7 @@ public class BaseService {
      */
     protected <T> T findBuild(final int buildNumber, final Function<Build, T> fn) throws IllegalArgumentException {
         return buildRepository.findByNumber(buildNumber)
-                .map(o -> fn.apply(o))
+                .map(fn::apply)
                 .orElseThrow(() -> new IllegalArgumentException(format("Build with number [%d] cannot be found", buildNumber)));
     }
 
@@ -49,7 +49,7 @@ public class BaseService {
     protected <T> T findModule(final int buildNumber, final String moduleName, final Function<Module, T> fn) throws IllegalArgumentException {
         return findBuild(buildNumber, (Function<Build, T>) build ->
                 moduleRepository.findByBuildAndName(build, moduleName)
-                        .map(o -> fn.apply(o))
+                        .map(fn::apply)
                         .orElseThrow(() -> new IllegalArgumentException(format("Module with name [%s] for build with number [%d] cannot be found", moduleName, buildNumber))));
     }
 
@@ -64,7 +64,7 @@ public class BaseService {
      */
     protected <T> T findPhase(final int buildNumber, final String phaseName, final Function<Phase, T> fn) throws IllegalArgumentException {
         return findBuild(buildNumber, (Function<Build, T>) build -> phaseRepository.findByBuildAndName(build, phaseName)
-                .map(o -> fn.apply(o))
+                .map(fn::apply)
                 .orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for build with number [%d] cannot be found", phaseName, buildNumber))));
     }
 
@@ -81,7 +81,7 @@ public class BaseService {
     protected <T> T findPhase(final int buildNumber, final String moduleName, final String phaseName, final Function<Phase, T> fn) throws IllegalArgumentException {
         return findModule(buildNumber, moduleName, (Function<Module, T>) module ->
                 phaseRepository.findByModuleAndName(module, phaseName)
-                        .map(o -> fn.apply(o))
+                        .map(fn::apply)
                         .orElseThrow(() -> new IllegalArgumentException(format("Phase with name [%s] for module with name [%s] and build with number [%d] cannot be found", phaseName, moduleName, buildNumber))));
     }
 
@@ -97,7 +97,7 @@ public class BaseService {
      */
     protected <T> T findTask(final int buildNumber, final String phaseName, final String taskName, final Function<Task, T> fn) throws IllegalArgumentException {
         return findPhase(buildNumber, phaseName, (Function<Phase, T>) phase -> taskRepository.findByPhaseAndName(phase, taskName)
-                .map(o -> fn.apply(o))
+                .map(fn::apply)
                 .orElseThrow(() -> new IllegalArgumentException(format("Task with name [%s] for phase with name [%s] and build with number [%d] cannot be found", taskName, phaseName, buildNumber))));
     }
 
@@ -114,7 +114,7 @@ public class BaseService {
      */
     protected <T> T findTask(final int buildNumber, final String moduleName, final String phaseName, final String taskName, final Function<Task, T> fn) throws IllegalArgumentException {
         return findPhase(buildNumber, moduleName, phaseName, (Function<Phase, T>) phase -> taskRepository.findByPhaseAndName(phase, taskName)
-                .map(o -> fn.apply(o))
+                .map(fn::apply)
                 .orElseThrow(() -> new IllegalArgumentException(format("Task with name [%s] for phase with name [%s] and module with name [%s]and build with number [%d] cannot be found", taskName, phaseName, moduleName, buildNumber))));
     }
 }
